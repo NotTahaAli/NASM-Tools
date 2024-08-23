@@ -1,6 +1,7 @@
 # NASM Tools By Muhammad Taha Ali
 
 [Github Repo](https://github.com/NotTahaAli/NASM-Tools)
+[VSCode Extension](https://marketplace.visualstudio.com/items?itemName=nottahaali.nasm-tools)
 
 ## Features
 
@@ -9,6 +10,10 @@
 - Command and Keybind (Ctrl + Alt + D) to Open DOSBOX.
 - Command and Keybind (F5) to Assemble and Run NASM file.
 - Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD.
+
+## Known Issues
+- This works on Windows Only
+- This works on Powershell Only and Not Command Prompt
 
 ## Requirements
 
@@ -32,3 +37,7 @@ Users appreciate release notes as you update your extension.
 ### 1.0.0
 
 Initial release of NASM Tools
+
+### 1.0.1
+#### Docs
+- Added Known Issues to README.md
