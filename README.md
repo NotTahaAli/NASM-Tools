@@ -37,3 +37,7 @@ Users appreciate release notes as you update your extension.
 ### 1.0.0
 
 Initial release of NASM Tools
+
+### 1.0.1
+#### Docs
+- Added Known Issues to README.md
