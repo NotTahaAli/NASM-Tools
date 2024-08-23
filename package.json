@@ -1,0 +1,113 @@
+{
+  "name": "nasm-tools",
+  "displayName": "NASM Tools",
+  "description": "Commands and Keybinds to assemble and run NASM code in DOSBox",
+  "version": "1.0.0",
+  "icon": "images/icon.png",
+  "publisher": "nottahaali",
+  "author": {
+    "name": "Muhammad Taha Ali",
+    "url": "https://github.com/NotTahaAli"
+  },
+  "engines": {
+    "vscode": "^1.92.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NotTahaAli/NASM-Tools"
+  },
+  "categories": [
+    "Programming Languages",
+    "Keymaps"
+  ],
+  "activationEvents": [
+    "onLanguage:nasm"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "nasm-tools.assemble",
+        "title": "NASM Tools: Assemble/Build Current File"
+      },
+      {
+        "command": "nasm-tools.enable",
+        "title": "NASM Tools: Enable Extension"
+      },
+      {
+        "command": "nasm-tools.openDosBox",
+        "title": "NASM Tools: Open DOSBox"
+      },
+      {
+        "command": "nasm-tools.run",
+        "title": "NASM Tools: Assemble and Run Current File"
+      },
+      {
+        "command": "nasm-tools.debug",
+        "title": "NASM Tools: Assemble and Debug Current File"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "NASM Tools",
+        "properties": {
+          "nasm-tools.nasmCommand": {
+            "type": "string",
+            "description": "Command to Run NASM (e.g. nasm if in PATH)"
+          },
+          "nasm-tools.dosboxCommand": {
+            "type": "string",
+            "description": "Command to Run DOSBox (e.g. dosbox or dosbox-x if in PATH)"
+          }
+        }
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "nasm-tools.assemble",
+        "key": "ctrl+shift+b",
+        "when": "editorLangId == nasm"
+      },
+      {
+        "command": "nasm-tools.run",
+        "key": "f5",
+        "when": "editorLangId == nasm"
+      },
+      {
+        "command": "nasm-tools.debug",
+        "key": "ctrl+f5",
+        "when": "editorLangId == nasm"
+      },
+      {
+        "command": "nasm-tools.openDosBox",
+        "key": "ctrl+alt+d"
+      }
+    ]
+  },
+  "extensionDependencies": [
+    "rights.nas-vscode"
+  ],
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/command-exists": "^1.2.3",
+    "@types/mocha": "^10.0.7",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.92.0",
+    "@typescript-eslint/eslint-plugin": "^7.14.1",
+    "@typescript-eslint/parser": "^7.11.0",
+    "@vscode/test-cli": "^0.0.9",
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "command-exists": "^1.2.9"
+  }
+}
