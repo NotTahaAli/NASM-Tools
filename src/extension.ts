@@ -23,7 +23,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		if (extensionActive) {
 			vscode.window.showInformationMessage('NASM Tools Extension is already activated');
 			return false;
-		} 
+		}
 		if (await enableExtension(deactivate)) {
 			extensionActive = true;
 			return true;
@@ -55,9 +55,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		const configs = vscode.workspace.getConfiguration('nasm-tools');
 		const dosboxCommand = configs.get('dosboxCommand');
 
-		const terminal = vscode.window.createTerminal('DOSBOX');
-		terminal.sendText(`& "${dosboxCommand}" -c "MOUNT C ." -c "C:"`);
-		terminal.sendText('exit');
+		vscode.window.createTerminal("DOSBOX", dosboxCommand as string, ["-c", "MOUNT C .", "-c", "C:"]);
 	});
 
 	const runCommand = vscode.commands.registerCommand('nasm-tools.run', async () => {
@@ -69,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		return await run();
 	});
 
-	
+
 
 	const debugCommand = vscode.commands.registerCommand('nasm-tools.debug', async () => {
 		if (!extensionActive) {

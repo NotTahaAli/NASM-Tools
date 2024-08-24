@@ -17,18 +17,20 @@ export async function run(debugMode = false) {
     const fileBaseName = document.fileName.split('\\').slice(-1)[0];
     const fileBaseNameWithoutExt = fileBaseName.split('.').slice(0, -1).join('.');
 
-    const terminal = vscode.window.createTerminal('DOSBOX');
-    terminal.show();
-
-    terminal.sendText(`cd "${fileDir}"`);
-    terminal.sendText(`& "${dosboxCommand}" -c "MOUNT C ." -c "C:" `, false);
     if (debugMode) {
         const path = join(vscode.extensions.getExtension("nottahaali.nasm-tools")!.extensionPath, "public");
-        terminal.sendText(`-c "MOUNT A '${path}'" `, false);
-        terminal.sendText(`-c "A:\\AFD ${fileBaseNameWithoutExt}.com"`);
+        vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+            "-c", `MOUNT C "${fileDir}"`,
+            "-c", "C:",
+            "-c", `MOUNT A "${path}"`,
+            "-c", `A:\\AFD ${fileBaseNameWithoutExt}.com`
+        ]);
     } else {
-        terminal.sendText(`-c "${fileBaseNameWithoutExt}.com"`);
+        vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+            "-c", `MOUNT C "${fileDir}"`,
+            "-c", "C:",
+            "-c", `${fileBaseNameWithoutExt}.com`
+        ]);
     }
-    terminal.sendText('exit');
     return true;
 }
