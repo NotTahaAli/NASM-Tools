@@ -20,7 +20,7 @@ export async function enableExtension(deactivate: ()=>void) {
 			vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', 'nasm', vscode.ConfigurationTarget.Global);
 		} else {
 			const choices = [];
-			if (commandExists.sync('winget'){
+			if (commandExists.sync('winget')){
 				choices.push('Install NASM Using Winget');
 			} 
 
@@ -60,7 +60,7 @@ export async function enableExtension(deactivate: ()=>void) {
 			vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', 'dosbox-x', vscode.ConfigurationTarget.Global);
 		} else {
 			const choices = [];
-			if (commandExists.sync('winget'){
+			if (commandExists.sync('winget')){
 				choices.push('Install DOSBOX-X Using Winget');
 			} 
 			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', ...choices, 'Disable Extension');
