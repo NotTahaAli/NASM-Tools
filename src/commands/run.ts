@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { assemble } from "./assemble";
-import { join } from 'path';
+import { dirname, join } from 'path';
 
 export async function run(debugMode = false) {
     if (!await assemble("runner")) {
@@ -13,7 +13,7 @@ export async function run(debugMode = false) {
     const editor = vscode.window.activeTextEditor;
 
     let document = editor!.document;
-    const fileDir = document.fileName.split('\\').slice(0, -1).join('\\');
+    const fileDir = dirname(document.fileName);
     const fileBaseNameWithoutExt = "runner";
 
     if (debugMode) {
