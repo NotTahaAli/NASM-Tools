@@ -3,7 +3,7 @@ import { assemble } from "./assemble";
 import { join } from 'path';
 
 export async function run(debugMode = false) {
-    if (!await assemble()) {
+    if (!await assemble("runner")) {
         return false;
     }
 
@@ -14,8 +14,7 @@ export async function run(debugMode = false) {
 
     let document = editor!.document;
     const fileDir = document.fileName.split('\\').slice(0, -1).join('\\');
-    const fileBaseName = document.fileName.split('\\').slice(-1)[0];
-    const fileBaseNameWithoutExt = fileBaseName.split('.').slice(0, -1).join('.');
+    const fileBaseNameWithoutExt = "runner";
 
     if (debugMode) {
         const path = join(vscode.extensions.getExtension("nottahaali.nasm-tools")!.extensionPath, "public");
