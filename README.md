@@ -54,7 +54,7 @@ This extension contributes the following settings:
 #### Refactor
 - Changed Delete to use unlinkSync instead of shell commands to remove shell dependency.
 
-## 1.1.5
+## 1.1.0
 ### Features
 - Linux and MacOS can now use the extension (No Auto install available)
 ### Fix
