@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { existsSync, unlinkSync } from 'fs';
-import { join } from 'path';
+import path from 'path';
 
 export async function assemble(outputFileBaseNameWithoutExt?: string) {
     const editor = vscode.window.activeTextEditor;
@@ -23,15 +23,16 @@ export async function assemble(outputFileBaseNameWithoutExt?: string) {
     const configs = vscode.workspace.getConfiguration('nasm-tools');
     const nasmCommand = configs.get('nasmCommand');
 
-    const fileDir = document.fileName.split('\\').slice(0, -1).join('\\');
-    const fileNameWithoutExt = document.fileName.split('.').slice(0, -1).join('.');
-    let outputFileNameWithoutExt = outputFileBaseNameWithoutExt ? fileDir + "\\" + outputFileBaseNameWithoutExt : fileNameWithoutExt;
+    const fileDir = path.dirname(document.fileName);
+    const extension = path.extname(document.fileName);
+    const fileNameWithoutExt = document.fileName.slice(0, -extension.length);
+    let outputFileNameWithoutExt = outputFileBaseNameWithoutExt ? path.join(fileDir, outputFileBaseNameWithoutExt) : fileNameWithoutExt;
     // Delete Previous Files
-    if (existsSync(join(outputFileNameWithoutExt + ".com"))) {
-        unlinkSync(join(outputFileNameWithoutExt+".com"));
+    if (existsSync(path.join(outputFileNameWithoutExt + ".com"))) {
+        unlinkSync(path.join(outputFileNameWithoutExt+".com"));
     }
-    if (existsSync(join(outputFileNameWithoutExt + ".lst"))) {
-        unlinkSync(join(outputFileNameWithoutExt+".lst"));;
+    if (existsSync(path.join(outputFileNameWithoutExt + ".lst"))) {
+        unlinkSync(path.join(outputFileNameWithoutExt+".lst"));;
     }
     const terminal = vscode.window.createTerminal('NASM Assemble', nasmCommand as string, [
         `${document.fileName}`,
@@ -41,12 +42,12 @@ export async function assemble(outputFileBaseNameWithoutExt?: string) {
     while (terminal.exitStatus === undefined) {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
-    if (existsSync(join(outputFileNameWithoutExt + ".com"))) {
+    if (existsSync(path.join(outputFileNameWithoutExt + ".com"))) {
         vscode.window.showInformationMessage('Assembly Successful');
         return true;
     } else {
         vscode.window.showErrorMessage('Assembly Failed, See LST File for Details');
-        vscode.workspace.openTextDocument(join(outputFileNameWithoutExt + ".lst")).then(doc => {
+        vscode.workspace.openTextDocument(path.join(outputFileNameWithoutExt + ".lst")).then(doc => {
             vscode.window.showTextDocument(doc);
         });
         return false;
