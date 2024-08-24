@@ -23,10 +23,9 @@ export async function assemble() {
     const configs = vscode.workspace.getConfiguration('nasm-tools');
     const nasmCommand = configs.get('nasmCommand');
 
-    const terminal = vscode.window.createTerminal('NASM Assemble');
     const fileNameWithoutExt = document.fileName.split('.').slice(0, -1).join('.');
     const fileDir = fileNameWithoutExt.split('\\').slice(0, -1).join('\\');
-    terminal.show();
+    let terminal = vscode.window.createTerminal('NASM Cleanup');
     terminal.sendText(`cd "${fileDir}"`);
     // Delete Previous Files
     if (existsSync(join(fileNameWithoutExt + ".com"))) {
@@ -35,8 +34,15 @@ export async function assemble() {
     if (existsSync(join(fileNameWithoutExt + ".lst"))) {
         terminal.sendText(`del "${fileNameWithoutExt}.lst"`);
     }
-    terminal.sendText(`& "${nasmCommand}" "${document.fileName}" -o "${fileNameWithoutExt}.com" -l "${fileNameWithoutExt}.lst"`);
     terminal.sendText('exit');
+    while (terminal.exitStatus === undefined) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+    }
+    terminal = vscode.window.createTerminal('NASM Assemble', nasmCommand as string, [
+        `${document.fileName}`,
+        "-o", `${fileNameWithoutExt}.com`,
+        "-l", `${fileNameWithoutExt}.lst`
+    ]);
     while (terminal.exitStatus === undefined) {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
