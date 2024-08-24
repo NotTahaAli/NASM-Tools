@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { existsSync } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';
 
 export async function assemble(outputFileBaseNameWithoutExt?: string) {
@@ -26,20 +26,14 @@ export async function assemble(outputFileBaseNameWithoutExt?: string) {
     const fileDir = document.fileName.split('\\').slice(0, -1).join('\\');
     const fileNameWithoutExt = document.fileName.split('.').slice(0, -1).join('.');
     let outputFileNameWithoutExt = outputFileBaseNameWithoutExt ? fileDir + "\\" + outputFileBaseNameWithoutExt : fileNameWithoutExt;
-    let terminal = vscode.window.createTerminal('NASM Cleanup');
-    terminal.sendText(`cd "${fileDir}"`);
     // Delete Previous Files
     if (existsSync(join(outputFileNameWithoutExt + ".com"))) {
-        terminal.sendText(`del "${outputFileNameWithoutExt}.com"`);
+        unlinkSync(join(outputFileNameWithoutExt+".com"));
     }
     if (existsSync(join(outputFileNameWithoutExt + ".lst"))) {
-        terminal.sendText(`del "${outputFileNameWithoutExt}.lst"`);
+        unlinkSync(join(outputFileNameWithoutExt+".lst"));;
     }
-    terminal.sendText('exit');
-    while (terminal.exitStatus === undefined) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-    terminal = vscode.window.createTerminal('NASM Assemble', nasmCommand as string, [
+    const terminal = vscode.window.createTerminal('NASM Assemble', nasmCommand as string, [
         `${document.fileName}`,
         "-o", `${outputFileNameWithoutExt}.com`,
         "-l", `${outputFileNameWithoutExt}.lst`
