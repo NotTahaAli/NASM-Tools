@@ -5,11 +5,11 @@ import { join } from 'path';
 
 export async function enableExtension(deactivate: ()=>void) {
 	// Check Current OS
-	const os = process.platform;
-	if (os !== 'win32') {
-		vscode.window.showErrorMessage('This extension only works on Windows');
-		return false;
-	}
+	// const os = process.platform;
+	// if (os !== 'win32') {
+	// 	vscode.window.showErrorMessage('This extension only works on Windows');
+	// 	return false;
+	// }
 
 	const configs = vscode.workspace.getConfiguration('nasm-tools');
 
