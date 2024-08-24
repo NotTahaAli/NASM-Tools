@@ -5,11 +5,11 @@ import { join } from 'path';
 
 export async function enableExtension(deactivate: ()=>void) {
 	// Check Current OS
-	const os = process.platform;
-	if (os !== 'win32') {
-		vscode.window.showErrorMessage('This extension only works on Windows');
-		return false;
-	}
+	// const os = process.platform;
+	// if (os !== 'win32') {
+	// 	vscode.window.showErrorMessage('This extension only works on Windows');
+	// 	return false;
+	// }
 
 	const configs = vscode.workspace.getConfiguration('nasm-tools');
 
@@ -19,7 +19,12 @@ export async function enableExtension(deactivate: ()=>void) {
 		if (commandExists.sync('nasm')) {
 			vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', 'nasm', vscode.ConfigurationTarget.Global);
 		} else {
-			const choice = await vscode.window.showInformationMessage('NASM is not installed.', 'Install NASM Using Winget', 'Disable Extension');
+			const choices = [];
+			if (commandExists.sync('winget')){
+				choices.push('Install NASM Using Winget');
+			} 
+
+			const choice = await vscode.window.showInformationMessage('NASM is not installed.', ...choices, 'Disable Extension');
 			if (choice === 'Install NASM Using Winget') {
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
@@ -54,7 +59,11 @@ export async function enableExtension(deactivate: ()=>void) {
 		} else if (commandExists.sync('dosbox-x')) {
 			vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', 'dosbox-x', vscode.ConfigurationTarget.Global);
 		} else {
-			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', 'Install DOSBOX-X Using Winget', 'Disable Extension');
+			const choices = [];
+			if (commandExists.sync('winget')){
+				choices.push('Install DOSBOX-X Using Winget');
+			} 
+			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', ...choices, 'Disable Extension');
 			if (choice === 'Install DOSBOX-X Using Winget') {
 				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
 				terminal.show();

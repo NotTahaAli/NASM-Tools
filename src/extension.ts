@@ -1,9 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import commandExists from 'command-exists';
-import { existsSync } from 'fs';
-import { join } from 'path';
 import { enableExtension } from './commands/enable';
 import { assemble } from './commands/assemble';
 import { run } from './commands/run';
