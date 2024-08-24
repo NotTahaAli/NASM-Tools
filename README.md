@@ -65,3 +65,7 @@ This extension contributes the following settings:
 ### 1.1.1
 #### Docs
 - Changed 1.1.5 to 1.1.0 in README.md
+
+### 1.1.2
+#### Fix
+- Fixed Run and Debug not working on linux due to incorrect path calculation
