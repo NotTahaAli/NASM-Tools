@@ -18,3 +18,7 @@
 - Fixed Long Names and Names with Spaces not Working
 ### Docs
 - Updated Known Issues in README.md
+
+## 1.0.4
+### Refactor
+- Changed Delete to use unlinkSync instead of shell commands to remove shell dependency.
