@@ -2,7 +2,7 @@
   "name": "nasm-tools",
   "displayName": "NASM Tools",
   "description": "Commands and Keybinds to assemble and run NASM code in DOSBox",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "icon": "images/icon.png",
   "publisher": "nottahaali",
   "author": {
