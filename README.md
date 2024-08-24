@@ -69,3 +69,7 @@ This extension contributes the following settings:
 ### 1.1.2
 #### Fix
 - Fixed Run and Debug not working on linux due to incorrect path calculation
+
+### 1.1.3
+#### Fix
+- Fixed Extension not working with older versions. Now Works Back to 1.46.0
