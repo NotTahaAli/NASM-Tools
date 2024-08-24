@@ -12,8 +12,9 @@
 - Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD.
 
 ## Known Issues
-- This works on Windows Only
-- This works on Powershell Only and Not Command Prompt
+- This works on Windows Only [#4](https://github.com/NotTahaAli/NASM-Tools/issues/4) and [#6](https://github.com/NotTahaAli/NASM-Tools/issues/6)
+- Error Occurs on Long Names and Names with Spaces while running [#5](https://github.com/NotTahaAli/NASM-Tools/issues/5)
+- Shows Option to Install with Winget even if Winget doesn't exist [#3](https://github.com/NotTahaAli/NASM-Tools/issues/3)
 
 ## Requirements
 
@@ -41,3 +42,9 @@ Initial release of NASM Tools
 ### 1.0.1
 #### Docs
 - Added Known Issues to README.md
+
+### 1.0.2
+#### Fixes
+- Fixed Extension not working with Command Prompt (Removed any windows shell dependency)
+#### Docs
+- Updated Known Issues in README.md
