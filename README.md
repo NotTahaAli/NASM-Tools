@@ -54,10 +54,14 @@ This extension contributes the following settings:
 #### Refactor
 - Changed Delete to use unlinkSync instead of shell commands to remove shell dependency.
 
-## 1.1.5
-### Features
+### 1.1.0
+#### Features
 - Linux and MacOS can now use the extension (No Auto install available)
-### Fix
+#### Fix
 - Fixed Install with Winget Option showing even if no winget.
-### Docs
+#### Docs
 - Fixed Docs that were reverted due to previous linking.
+
+### 1.1.1
+#### Docs
+- Changed 1.1.5 to 1.1.0 in README.md

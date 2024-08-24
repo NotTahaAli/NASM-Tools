@@ -30,3 +30,7 @@
 - Fixed Install with Winget Option showing even if no winget.
 ### Docs
 - Fixed Docs that were reverted due to previous linking.
+
+## 1.1.1
+### Docs
+- Changed 1.1.5 to 1.1.0 in README.md
