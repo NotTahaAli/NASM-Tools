@@ -22,3 +22,11 @@
 ## 1.0.4
 ### Refactor
 - Changed Delete to use unlinkSync instead of shell commands to remove shell dependency.
+
+## 1.1.0
+### Features
+- Linux and MacOS can now use the extension (No Auto install available)
+### Fix
+- Fixed Install with Winget Option showing even if no winget.
+### Docs
+- Fixed Docs that were reverted due to previous linking.
