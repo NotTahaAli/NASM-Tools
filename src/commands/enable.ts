@@ -20,22 +20,18 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 			vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', 'nasm', vscode.ConfigurationTarget.Global);
 		} else {
 			const choices = [];
-			if (commandExists.sync('winget')){
-				choices.push('Install NASM Using Winget');
-			} 
-			else if (commandExists.sync('pacman')){
-			  choices.push('Install NASM Using Pacman');
+			const package_managers = ['winget','pacman', 'apt', 'yum', 'dnf', 'brew'];
+			let command = "-1"; //Set to impossible value as default option
+			for (let i = 0; i < package_managers.length; i++) {
+				const element = package_managers[i];
+				if(commandExists.sync(element)){
+					command = element;
+					choices.push('Install NASM Using ' + command);
+					break;
+				}	
 			}
-			else if (commandExists.sync('apt')){
-				choices.push('Install NASM using Apt');
-			}
-			else if (commandExists.sync('yum')){
-				choices.push('Install NASM using Yum');
-			}
-			else if (commandExists.sync('dnf')){
-				choices.push('Install NASM using dnf');
-			}
-			else {
+			if(command === '-1')
+			{
 				vscode.window.showErrorMessage('Failed to find a package manager to install NASM, you will have to do this yourself.');
 			}
 			const choice = await vscode.window.showInformationMessage('NASM is not installed.', ...choices, 'Disable Extension');
@@ -58,7 +54,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			} 
-			else if(choice === 'Install NASM Using Pacman'){
+			else if(choice === 'Install NASM Using pacman'){
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('sudo pacman -S --noconfirm nasm && exit');
@@ -76,7 +72,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
-			else if(choice === 'Install NASM Using Apt'){
+			else if(choice === 'Install NASM Using apt'){
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('sudo apt install -y nasm && exit');			
@@ -95,7 +91,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
-			else if(choice === 'Install NASM using Yum'){
+			else if(choice === 'Install NASM Using yum'){
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('sudo yum install -y nasm && exit');			
@@ -133,6 +129,25 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
+			else if(choice === 'Install NASM Using brew'){
+				const terminal = vscode.window.createTerminal('Install NASM');
+				terminal.show();
+				terminal.sendText('brew install nasm && exit');			
+	
+				while(terminal.exitStatus === undefined){
+				  await new Promise(resolve => setTimeout(resolve, 500));
+				}
+				if(existsSync('/usr/bin/nasm')){
+				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
+				  vscode.window.showInformationMessage('NASM Installed');
+				}
+				else {
+					vscode.window.showErrorMessage('Failed to install NASM, NASM Tools Extension not activated.');
+					console.log('Failed to install NASM');
+					deactivate();
+					return false;
+				}
+			}
 			else {
 				console.log('NASM is not installed, NASM Tools Extension not activated.');
 				deactivate();
@@ -150,23 +165,22 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 			vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', 'dosbox-x', vscode.ConfigurationTarget.Global);
 		} else {
 			const choices = [];
-			if (commandExists.sync('winget')){
-				choices.push('Install DOSBOX-X Using Winget');
-			} 
-			else if (commandExists.sync('pacman')){
-				choices.push('Install DOSBOX Using Pacman');
+			const package_managers = ['winget','pacman', 'apt', 'yum', 'dnf', 'brew'];
+			let command = "-1"; //Set to impossible value as default option
+			for (let i = 0; i < package_managers.length; i++) {
+				const element = package_managers[i];
+				if(commandExists.sync(element)){
+					command = element;
+					choices.push('Install DOSBOX Using ' + command);
+					break;
+				}	
 			}
-			else if (commandExists.sync('apt')){
-				choices.push('Install DOSBOX using Apt');
-			}
-			else if (commandExists.sync('yum')){
-				choices.push('Install DOSBOX using Yum');
-			}
-			else if (commandExists.sync('dnf')){
-				choices.push('Install DOSBOX using dnf');
+			if(command === '-1')
+			{
+				vscode.window.showErrorMessage('Failed to find a package manager to install DOSBOX, you will have to do this yourself.');
 			}
 			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', ...choices, 'Disable Extension');
-			if (choice === 'Install DOSBOX-X Using Winget') {
+			if (choice === 'Install DOSBOX-X Using winget') {
 				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
 				terminal.show();
 				terminal.sendText('winget install -e --id joncampbell123.DOSBox-X -h');
@@ -184,8 +198,27 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					deactivate();
 					return false;
 				}
-			}
-			else if(choice === 'Install DOSBOX Using Pacman'){
+			} 
+			else if (choice === 'Install DOSBOX-X Using brew') {
+				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
+				terminal.show();
+				terminal.sendText('brew install dosbox-x && exit');
+				// Wait for install to complete
+				while (terminal.exitStatus === undefined) {
+					await new Promise(resolve => setTimeout(resolve, 500));
+				}
+				// Check if DOSBox-X is installed
+				if (existsSync('/usr/local/bin/dosbox-x')) { // Adjust the path if Homebrew installs it elsewhere
+					vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/local/bin/dosbox-x', vscode.ConfigurationTarget.Global);
+					vscode.window.showInformationMessage('DOSBOX-X Installed');
+				} else {
+					vscode.window.showErrorMessage('Failed to install DOSBOX-X, NASM Tools Extension not activated.');
+					console.log('Failed to install DOSBOX-X');
+					deactivate();
+					return false;
+				}
+			}			
+			else if(choice === 'Install DOSBOX Using pacman'){
 				const terminal = vscode.window.createTerminal('Install DOSBOX');
 				terminal.show();
 				terminal.sendText('sudo pacman -S dosbox && exit');			
@@ -204,7 +237,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
-			else if(choice === 'Install DOSBOX Using Apt'){
+			else if(choice === 'Install DOSBOX Using apt'){
 				const terminal = vscode.window.createTerminal('Install DOSBOX');
 				terminal.show();
 				terminal.sendText('sudo apt install dosbox && exit');			
@@ -223,7 +256,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
-			else if(choice === 'Install DOSBOX Using Yum'){
+			else if(choice === 'Install DOSBOX Using yum'){
 				const terminal = vscode.window.createTerminal('Install DOSBOX');
 				terminal.show();
 				terminal.sendText('sudo yum install -y epel-release && yum install -y dosbox && exit');			
