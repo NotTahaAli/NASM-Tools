@@ -5,15 +5,14 @@
 
 ## Features
 
-- Automatically Install NASM and DOSBOX-X
+- Automatically Install NASM and DOSBOX-X (Windows Only using Winget)
 - Command and Keybind (Ctrl + Shift + B) to Assemble NASM file.
 - Command and Keybind (Ctrl + Alt + D) to Open DOSBOX.
 - Command and Keybind (F5) to Assemble and Run NASM file.
 - Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD.
 
 ## Known Issues
-- This works on Windows Only
-- This works on Powershell Only and Not Command Prompt
+- Install Option available for Windows Only [#4](https://github.com/NotTahaAli/NASM-Tools/issues/4) and [#6](https://github.com/NotTahaAli/NASM-Tools/issues/6)
 
 ## Requirements
 
@@ -32,8 +31,45 @@ This extension contributes the following settings:
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
-
 ### 1.0.0
+- Initial release of NASM Tools
 
-Initial release of NASM Tools
+### 1.0.1
+#### Docs
+- Added Known Issues to README.md
+
+### 1.0.2
+#### Fixes
+- Fixed Extension not working with Command Prompt (Removed any windows shell dependency)
+#### Docs
+- Updated Known Issues in README.md
+
+### 1.0.3
+#### Fixes
+- Fixed Long Names and Names with Spaces not Working
+#### Docs
+- Updated Known Issues in README.md
+
+### 1.0.4
+#### Refactor
+- Changed Delete to use unlinkSync instead of shell commands to remove shell dependency.
+
+### 1.1.0
+#### Features
+- Linux and MacOS can now use the extension (No Auto install available)
+#### Fix
+- Fixed Install with Winget Option showing even if no winget.
+#### Docs
+- Fixed Docs that were reverted due to previous linking.
+
+### 1.1.1
+#### Docs
+- Changed 1.1.5 to 1.1.0 in README.md
+
+### 1.1.2
+#### Fix
+- Fixed Run and Debug not working on linux due to incorrect path calculation
+
+### 1.1.3
+#### Fix
+- Fixed Extension not working with older versions. Now Works Back to 1.46.0
