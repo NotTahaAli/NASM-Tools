@@ -36,7 +36,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				vscode.window.showErrorMessage('Failed to find a package manager to install NASM, you will have to do this yourself.');
 			}
 			const choice = await vscode.window.showInformationMessage('NASM is not installed.', ...choices, 'Disable Extension');
-			if (choice === 'Install NASM Using Winget') {
+			if (choice === 'Install NASM Using winget') {
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('winget install -e --id NASM.NASM -h');
@@ -62,7 +62,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/nasm')){
+				if(commandExists.sync('nasm')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('NASM Installed');
 				}
@@ -81,7 +81,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/nasm')){
+				if(commandExists.sync('nasm')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('NASM Installed');
 				}
@@ -100,7 +100,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/nasm')){
+				if(commandExists.sync('nasm')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('NASM Installed');
 				}
@@ -119,7 +119,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/nasm')){
+				if(commandExists.sync('nasm')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('NASM Installed');
 				}
@@ -138,7 +138,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/nasm')){
+				if(commandExists.sync('nasm')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('NASM Installed');
 				}
@@ -158,7 +158,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 	}
 
 	// Check If DOSBOX Exists
-	const dosboxPath = configs.get('dosboxCommand') as string;
+		const dosboxPath = configs.get('dosboxCommand') as string;
 	if (!commandExists.sync(dosboxPath)) {
 		// Check if dosbox console command exists
 		if (commandExists.sync('dosbox')) {
@@ -210,7 +210,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					await new Promise(resolve => setTimeout(resolve, 500));
 				}
 				// Check if DOSBox-X is installed
-				if (existsSync('/usr/local/bin/dosbox-x')) { // Adjust the path if Homebrew installs it elsewhere
+				if (commandExists.sync('dosbox-x')) { // Adjust the path if Homebrew installs it elsewhere
 					vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/local/bin/dosbox-x', vscode.ConfigurationTarget.Global);
 					vscode.window.showInformationMessage('DOSBOX-X Installed');
 				} else {
@@ -228,7 +228,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/dosbox')){
+				if(commandExists.sync('dosbox')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/bin/dosbox', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('DosBox Installed');
 				}
@@ -247,7 +247,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/dosbox')){
+				if(commandExists.sync('dosbox')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/bin/dosbox', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('DosBox Installed');
 				}
@@ -266,7 +266,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/dosbox')){
+				if(commandExists.sync('dosbox')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/bin/dosbox', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('DosBox Installed');
 				}
@@ -285,7 +285,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
 				}
-				if(existsSync('/usr/bin/dosbox')){
+				if(commandExists.sync('dosbox')){
 				  vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/bin/dosbox', vscode.ConfigurationTarget.Global);
 				  vscode.window.showInformationMessage('DosBox Installed');
 				}
