@@ -21,7 +21,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage('NASM Tools Extension is already activated');
 			return false;
 		}
-		if (await enableExtension(deactivate)) {
+		if (await enableExtension(context,deactivate)) {
 			extensionActive = true;
 			return true;
 		}
@@ -29,7 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 	context.subscriptions.push(enableCommand);
 
-	if (!enableExtension(deactivate)) {
+	if (!enableExtension(context, deactivate)) {
 		return false;
 	}
 	extensionActive = true;
