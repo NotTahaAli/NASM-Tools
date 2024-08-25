@@ -5,14 +5,14 @@
 
 ## Features
 
-- Automatically Install NASM and DOSBOX-X (Windows Only using Winget)
+- Automatically Install NASM and DOSBOX-X
 - Command and Keybind (Ctrl + Shift + B) to Assemble NASM file.
 - Command and Keybind (Ctrl + Alt + D) to Open DOSBOX.
 - Command and Keybind (F5) to Assemble and Run NASM file.
 - Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD.
 
 ## Known Issues
-- Install Option available for Windows Only [#4](https://github.com/NotTahaAli/NASM-Tools/issues/4) and [#6](https://github.com/NotTahaAli/NASM-Tools/issues/6)
+- Install Option for MAC Available only if Homebrew Installed [#6](https://github.com/NotTahaAli/NASM-Tools/issues/6)
 
 ## Requirements
 
@@ -73,3 +73,14 @@ This extension contributes the following settings:
 ### 1.1.3
 #### Fix
 - Fixed Extension not working with older versions. Now Works Back to 1.46.0
+
+### 1.2.0
+#### Fix
+- Fixed Extension bypassing command check if nasm or dosbox were uninstalled after being installed.
+#### Feat
+- Added support for the following package managers (mainly linux)
+  - pacman
+  - apt
+  - yum
+  - dnf
+  - brew
