@@ -12,9 +12,10 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 	// }
 
 	const configs = vscode.workspace.getConfiguration('nasm-tools');
-
+	
 	// Check if NASM Exists
-	if (!configs.get('nasmCommand') || !commandExists.sync('nasm')) {
+	const nasmPath = configs.get('nasmCommand') as string;
+	if (!commandExists.sync(nasmPath)) {
 		// Check if nasm console command exists
 		if (commandExists.sync('nasm')) {
 			vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', 'nasm', vscode.ConfigurationTarget.Global);
@@ -157,7 +158,8 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 	}
 
 	// Check If DOSBOX Exists
-	if (!configs.get('dosboxCommand') || !commandExists.sync('dosbox')) {
+	const dosboxPath = configs.get('dosboxCommand') as string;
+	if (!commandExists.sync(dosboxPath)) {
 		// Check if dosbox console command exists
 		if (commandExists.sync('dosbox')) {
 			vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', 'dosbox', vscode.ConfigurationTarget.Global);
