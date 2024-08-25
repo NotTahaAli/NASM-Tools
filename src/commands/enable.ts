@@ -182,7 +182,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				vscode.window.showErrorMessage('Failed to find a package manager to install DOSBOX, you will have to do this yourself.');
 			}
 			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', ...choices, 'Disable Extension');
-			if (choice === 'Install DOSBOX-X Using winget') {
+			if (choice === 'Install DOSBOX Using winget') {
 				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
 				terminal.show();
 				terminal.sendText('winget install -e --id joncampbell123.DOSBox-X -h');
@@ -201,7 +201,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			} 
-			else if (choice === 'Install DOSBOX-X Using brew') {
+			else if (choice === 'Install DOSBOX Using brew') {
 				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
 				terminal.show();
 				terminal.sendText('brew install dosbox-x && exit');
