@@ -42,3 +42,14 @@
 ## 1.1.3
 ### Fix
 - Fixed Extension not working with older versions. Now Works Back to 1.46.0
+
+## 1.2.0
+### Fix
+- Fixed Extension bypassing command check if nasm or dosbox were uninstalled after being installed.
+### Feat
+- Added support for the following package managers (mainly linux)
+  - pacman
+  - apt
+  - yum
+  - dnf
+  - brew
