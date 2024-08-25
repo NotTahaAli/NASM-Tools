@@ -27,13 +27,16 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 			  choices.push('Install NASM Using Pacman');
 			}
 			else if (commandExists.sync('apt')){
-				choices.push('Install NASM using Apt');
+				choices.push('Install NASM Using Apt');
 			}
 			else if (commandExists.sync('yum')){
-				choices.push('Install NASM using Yum');
+				choices.push('Install NASM Using Yum');
 			}
 			else if (commandExists.sync('dnf')){
-				choices.push('Install NASM using dnf');
+				choices.push('Install NASM Using dnf');
+			}
+			else if (commandExists.sync('homebrew')){
+				choices.push('Install NASM Using HomeBrew');
 			}
 			else {
 				vscode.window.showErrorMessage('Failed to find a package manager to install NASM, you will have to do this yourself.');
@@ -95,7 +98,7 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					return false;
 				}
 			}
-			else if(choice === 'Install NASM using Yum'){
+			else if(choice === 'Install NASM Using Yum'){
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('sudo yum install -y nasm && exit');			
@@ -118,6 +121,25 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				const terminal = vscode.window.createTerminal('Install NASM');
 				terminal.show();
 				terminal.sendText('sudo dnf install -y nasm && exit');			
+	
+				while(terminal.exitStatus === undefined){
+				  await new Promise(resolve => setTimeout(resolve, 500));
+				}
+				if(existsSync('/usr/bin/nasm')){
+				  vscode.workspace.getConfiguration('nasm-tools').update('nasmCommand', '/usr/bin/nasm', vscode.ConfigurationTarget.Global);
+				  vscode.window.showInformationMessage('NASM Installed');
+				}
+				else {
+					vscode.window.showErrorMessage('Failed to install NASM, NASM Tools Extension not activated.');
+					console.log('Failed to install NASM');
+					deactivate();
+					return false;
+				}
+			}
+			else if(choice === 'Install NASM Using HomeBrew'){
+				const terminal = vscode.window.createTerminal('Install NASM');
+				terminal.show();
+				terminal.sendText('brew install nasm && exit');			
 	
 				while(terminal.exitStatus === undefined){
 				  await new Promise(resolve => setTimeout(resolve, 500));
