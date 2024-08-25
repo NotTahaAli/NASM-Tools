@@ -179,13 +179,16 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 				choices.push('Install DOSBOX Using Pacman');
 			}
 			else if (commandExists.sync('apt')){
-				choices.push('Install DOSBOX using Apt');
+				choices.push('Install DOSBOX Using Apt');
 			}
 			else if (commandExists.sync('yum')){
-				choices.push('Install DOSBOX using Yum');
+				choices.push('Install DOSBOX Using Yum');
 			}
 			else if (commandExists.sync('dnf')){
-				choices.push('Install DOSBOX using dnf');
+				choices.push('Install DOSBOX Using dnf');
+			}
+			else if (commandExists.sync('homebrew')){
+				choices.push('Install DOSBOX-X Using HomeBrew');
 			}
 			const choice = await vscode.window.showInformationMessage('DOSBOX or DOSBOX-X is not installed.', ...choices, 'Disable Extension');
 			if (choice === 'Install DOSBOX-X Using Winget') {
@@ -206,7 +209,26 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 					deactivate();
 					return false;
 				}
-			}
+			} 
+			else if (choice === 'Install DOSBOX-X Using HomeBrew') {
+				const terminal = vscode.window.createTerminal('Install DOSBOX-X');
+				terminal.show();
+				terminal.sendText('brew install dosbox-x && exit');
+				// Wait for install to complete
+				while (terminal.exitStatus === undefined) {
+					await new Promise(resolve => setTimeout(resolve, 500));
+				}
+				// Check if DOSBox-X is installed
+				if (existsSync('/usr/local/bin/dosbox-x')) { // Adjust the path if Homebrew installs it elsewhere
+					vscode.workspace.getConfiguration('nasm-tools').update('dosboxCommand', '/usr/local/bin/dosbox-x', vscode.ConfigurationTarget.Global);
+					vscode.window.showInformationMessage('DOSBOX-X Installed');
+				} else {
+					vscode.window.showErrorMessage('Failed to install DOSBOX-X, NASM Tools Extension not activated.');
+					console.log('Failed to install DOSBOX-X');
+					deactivate();
+					return false;
+				}
+			}			
 			else if(choice === 'Install DOSBOX Using Pacman'){
 				const terminal = vscode.window.createTerminal('Install DOSBOX');
 				terminal.show();
