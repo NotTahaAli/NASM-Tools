@@ -4,12 +4,28 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 
 export async function enableExtension(context :vscode.ExtensionContext ,deactivate: ()=>void) {
-	// Check Current OS
-	// const os = process.platform;
-	// if (os !== 'win32') {
-	// 	vscode.window.showErrorMessage('This extension only works on Windows');
-	// 	return false;
-	// }
+	
+	//Check if the Current OS is darwin and if homebrew is instealled or not.
+	const os = process.platform; 
+	if(os === 'darwin'){
+		if(!(commandExists.sync('nasm')) && !(commandExists.sync('dosbox-x'))){
+			if(!(commandExists.sync('brew'))){
+				const option = "Install HomeBrew";
+				const choice = await vscode.window.showInformationMessage('HomeBrew is not installed', option, 'Disable Extension');
+				if(choice === 'Install HomeBrew'){
+					const terminal = vscode.window.createTerminal('Install HomeBrew');
+					terminal.show(); 
+					terminal.sendText('/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh) && exit');
+				}
+				else {
+					console.log('Homebrew not available, cannot install nasm/dosbox automatically, NASM Tools Extension not activated.');
+					deactivate();
+					return false;
+				}
+
+			}
+		}
+	}
 
 	const configs = vscode.workspace.getConfiguration('nasm-tools');
 	
