@@ -14,8 +14,7 @@ if %ERRORLEVEL% NEQ 0 (
             set DOSBOX_PATH=%cd%\dosbox-x
         )
         if exist "%DOSBOX_PATH%\dosbox-x.exe" (
-            set DOSBOX_PATH=
-            setx PATH "%PATH%;^%DOSBOX_PATH^%"
+            setx PATH "%PATH%;%DOSBOX_PATH%"
         )
     )
 )
@@ -32,8 +31,7 @@ if %ERRORLEVEL% NEQ 0 (
         set NASM_PATH=%cd%\nasm
     )
     if exist "%NASM_PATH%\nasm.exe" (
-        set NASM_PATH=
-        setx PATH "%PATH%;^%NASM_PATH^%"
+        setx PATH "%PATH%;%NASM_PATH%"
     )
 )
 
@@ -50,9 +48,7 @@ if %ERRORLEVEL% NEQ 0 (
         cd ..
         setx VSCODE_PATH "%cd%\vscode\bin"
         set VSCODE_PATH=%cd%\vscode\bin
-        set NASM_PATH=
-        set DOSBOX_PATH=
-        echo {^"nasm-tools.nasmCommand^": ^"%NASM_PATH%\nasm^", ^"nasm-tools.dosboxCommand^": ^"%DOSBOX_PATH%\dosbox-x^"} >> %cd%\vscode\data\user-data\User\settings.json
+        echo {^"nasm-tools.nasmCommand^": ^"%NASM_PATH%\nasm.exe^", ^"nasm-tools.dosboxCommand^": ^"%DOSBOX_PATH%\dosbox-x.exe^"} >> %cd%\vscode\data\user-data\User\settings.json
     )
     if exist "%VSCODE_PATH%\Code.exe" (
         set VSCODE_COMMAND="%VSCODE_PATH%\code"
