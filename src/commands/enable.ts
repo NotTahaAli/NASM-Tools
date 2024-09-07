@@ -304,7 +304,6 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 		}
 	}
 	const otherConfigs = vscode.workspace.getConfiguration("nasm");
-	vscode.window.showInformationMessage(otherConfigs.get("nasmPath") || "undefined");
 	otherConfigs.update("nasmPath", configs.get('nasmCommand'), vscode.ConfigurationTarget.Global);
 	vscode.window.showInformationMessage('NASM Tools Extension Activated');
 	console.log(configs.get('nasmCommand'));
