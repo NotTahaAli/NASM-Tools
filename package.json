@@ -85,7 +85,8 @@
     ]
   },
   "extensionDependencies": [
-    "rights.nas-vscode"
+    "rights.nas-vscode",
+    "doinkythederp.nasm-language-support"
   ],
   "scripts": {
     "vscode:prepublish": "npm run compile",
