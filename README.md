@@ -39,13 +39,13 @@ This extension contributes the following settings:
 - Added Known Issues to README.md
 
 ### 1.0.2
-#### Fixes
+#### Fix
 - Fixed Extension not working with Command Prompt (Removed any windows shell dependency)
 #### Docs
 - Updated Known Issues in README.md
 
 ### 1.0.3
-#### Fixes
+#### Fix
 - Fixed Long Names and Names with Spaces not Working
 #### Docs
 - Updated Known Issues in README.md
@@ -77,10 +77,14 @@ This extension contributes the following settings:
 ### 1.2.0
 #### Fix
 - Fixed Extension bypassing command check if nasm or dosbox were uninstalled after being installed.
-#### Feat
+#### Features
 - Added support for the following package managers (mainly linux)
   - pacman
   - apt
   - yum
   - dnf
   - brew
+
+### 1.3.0
+#### Features
+- Added Dependancy [NASM Language Support](https://marketplace.visualstudio.com/items?itemName=doinkythederp.nasm-language-support) for Assembly Error Validation
