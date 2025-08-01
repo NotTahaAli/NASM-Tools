@@ -3,6 +3,8 @@ import { assemble } from "./assemble";
 import { dirname, join } from 'path';
 
 export async function run(debugMode = false) {
+
+    // pass debug mode to assemble function and generate elf file for debugging if gdb
     if (!await assemble("runner")) {
         return false;
     }
@@ -18,12 +20,51 @@ export async function run(debugMode = false) {
 
     if (debugMode) {
         const path = join(vscode.extensions.getExtension("nottahaali.nasm-tools")!.extensionPath, "public");
-        vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
-            "-c", `MOUNT C "${fileDir}"`,
-            "-c", "C:",
-            "-c", `MOUNT A "${path}"`,
-            "-c", `A:\\AFD ${fileBaseNameWithoutExt}.com`
-        ]);
+        const debuggerType = configs.get('debuggerType') || 'afd';
+        const debuggerPort = configs.get('debuggerPort') || 1111;
+
+        if (debuggerType === 'gdb' /* and check availablity of gdb and i386 */) {
+
+            // add check for debugger configuration
+            vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+                "-set", `serial1=nullmodem port:${debuggerPort}`,
+                "-c", `MOUNT C "${fileDir}"`,
+                "-c", "C:",
+                "-c", `MOUNT A "${path}"`,
+                "-c", `A:\\DEBUG.COM ${fileBaseNameWithoutExt}.com`
+            ]);
+
+            await vscode.debug.startDebugging(undefined, {
+                name: "NASM Debug", 
+                type: "cppdbg",
+                request: "launch",
+                cwd: fileDir,
+                program: join(fileDir, `${fileBaseNameWithoutExt}.elf`),
+                sourceFileMap: {
+                    [fileDir]: fileDir
+                }, 
+                MIMode: "gdb",
+                miDebuggerPath: "gdb", 
+                miDebuggerServerAddress: `localhost:${debuggerPort}`,
+                setupCommands: [
+                    { "text": `cd ${fileDir}` }, 
+                    { "text": `file ${fileBaseNameWithoutExt}.elf` }, 
+                    { "text": `directory ${fileDir}` }, 
+                    { "text": "set architecture i8086" }, 
+                    { "text": "set disassembly-flavor intel" }
+                ], 
+                stopAtEntry: true,
+                externalConsole: false,
+            })
+
+        } else {
+            vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+                "-c", `MOUNT C "${fileDir}"`,
+                "-c", "C:",
+                "-c", `MOUNT A "${path}"`,
+                "-c", `A:\\AFD ${fileBaseNameWithoutExt}.com`
+            ]);
+        }
     } else {
         vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
             "-c", `MOUNT C "${fileDir}"`,
