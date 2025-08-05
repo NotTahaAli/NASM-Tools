@@ -303,6 +303,32 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 			}
 		}
 	}
+
+	// Check if GDB exists
+
+	// Check if i386-elf-ld exists
+
+	// if these don't exist then automatically change configuration of debugger to afd
+
+	// check if C/C++ extension is installed
+	const cppExtension = vscode.extensions.getExtension('ms-vscode.cpptools');
+
+	if (!cppExtension) {
+		const choice = await vscode.window.showInformationMessage(
+			'C/C++ extension is required for GDB debugging. Would you like to install it?',
+			'Install C/C++ Extension',
+			'Use AFD Instead'
+		);
+		
+		if (choice === 'Install C/C++ Extension') {
+			vscode.commands.executeCommand('workbench.extensions.installExtension', 'ms-vscode.cpptools');
+			vscode.window.showInformationMessage('C/C++ extension installation started. Please reload VS Code after installation.');
+		} else if (choice === 'Use AFD Instead') {
+			vscode.workspace.getConfiguration('nasm-tools').update('debuggerType', 'afd', vscode.ConfigurationTarget.Global);
+			vscode.window.showInformationMessage('Debugger set to AFD mode.');
+		}
+	}
+
 	const otherConfigs = vscode.workspace.getConfiguration("nasm");
 	vscode.window.showInformationMessage(otherConfigs.get("nasmPath") || "undefined");
 	otherConfigs.update("nasmPath", configs.get('nasmCommand'), vscode.ConfigurationTarget.Global);

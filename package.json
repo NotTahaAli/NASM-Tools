@@ -58,6 +58,19 @@
           "nasm-tools.dosboxCommand": {
             "type": "string",
             "description": "Command to Run DOSBox (e.g. dosbox or dosbox-x if in PATH)"
+          }, 
+          "nasm-tools.debuggerType": {
+            "type": "string",
+            "enum": ["afd", "gdb"],
+            "default": "gdb",
+            "description": "Choose Debugger: AFD (legacy) or GDB (advanced)"
+          }, 
+          "nasm-tools.debuggerPort": {
+            "type": "number",
+            "default": 1111,
+            "minimum": 1024,
+            "maximum": 65535,
+            "description": "Port for Debugger Communication (default: 1111)"
           }
         }
       }

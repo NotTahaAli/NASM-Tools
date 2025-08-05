@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 import { assemble } from "./assemble";
 import { dirname, join } from 'path';
+import { debug } from 'console';
 
 export async function run(debugMode = false) {
 
     // pass debug mode to assemble function and generate elf file for debugging if gdb
-    if (!await assemble("runner")) {
+    if (!await assemble("runner", debugMode)) {
         return false;
     }
 
@@ -55,6 +56,11 @@ export async function run(debugMode = false) {
                 ], 
                 stopAtEntry: true,
                 externalConsole: false,
+                logging: {
+                    engineLogging: true, 
+                    trace: true, 
+                    traceResponse: true
+                }
             })
 
         } else {

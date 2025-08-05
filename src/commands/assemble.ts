@@ -1,8 +1,8 @@
 import * as vscode from 'vscode';
-import { existsSync, unlinkSync } from 'fs';
+import { readFileSync, writeFileSync, copyFileSync, existsSync, unlinkSync } from 'fs';
 import path from 'path';
 
-export async function assemble(outputFileBaseNameWithoutExt?: string) {
+export async function assemble(outputFileBaseNameWithoutExt?: string, createELF = false) {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         vscode.window.showErrorMessage('No active text editor found');
@@ -42,7 +42,47 @@ export async function assemble(outputFileBaseNameWithoutExt?: string) {
     while (terminal.exitStatus === undefined) {
         await new Promise(resolve => setTimeout(resolve, 500));
     }
+    
     if (existsSync(path.join(outputFileNameWithoutExt + ".com"))) {
+
+        if (createELF) {
+            // Backup original file
+            const backupFile = path.join(fileNameWithoutExt + ".bak");
+            copyFileSync(document.fileName, backupFile);
+
+            // Replace [org 0x0100] and org 0x0100 with [bits 16] and bits 16
+            let asmContent = readFileSync(document.fileName, 'utf8');
+            asmContent = asmContent.replace(/\[org 0x0100\]/gi, '[bits 16]');
+            asmContent = asmContent.replace(/org 0x0100/gi, 'bits 16');
+            writeFileSync(document.fileName, asmContent, 'utf8');
+
+            if (process.platform === 'win32') {
+                // Assemble to ELF using NASM and i386-elf-ld
+                let term = vscode.window.createTerminal('ELF Assemble', nasmCommand as string, [
+                    "-f", "elf32", 
+                    "-g3", "-F", "dwarf", `${document.fileName}`, 
+                    "-o", `${fileNameWithoutExt}.o`
+                ]);
+                while (term.exitStatus === undefined) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                // add config setting to i386-elf-ld command or ld as default
+                term = vscode.window.createTerminal('ELF Link', 'i386-elf-ld', [
+                    "-Ttext=0x0100", `${fileNameWithoutExt}.o`, 
+                    "-o", `${outputFileNameWithoutExt}.elf`
+                ]);
+                while (term.exitStatus === undefined) {
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+
+                unlinkSync(path.join(fileNameWithoutExt + ".o"));
+            }
+
+            copyFileSync(backupFile, document.fileName);
+            unlinkSync(backupFile);
+        }
+
         vscode.window.showInformationMessage('Assembly Successful');
         return true;
     } else {
