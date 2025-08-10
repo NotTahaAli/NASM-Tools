@@ -9,7 +9,11 @@
 - Command and Keybind (Ctrl + Shift + B) to Assemble NASM file.
 - Command and Keybind (Ctrl + Alt + D) to Open DOSBOX.
 - Command and Keybind (F5) to Assemble and Run NASM file.
-- Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD.
+- Command and Keybind (Ctrl+F5) to Assemble and Debug NASM file using AFD or GDB.
+- Command and Keybind (Ctrl+Shift+D) to Toggle between AFD and GDB debugging modes.
+- **NEW**: Modern debugging support with GDB (when available)
+- **NEW**: Automatic detection and installation prompts for GDB and i386-elf-ld
+- **NEW**: Command to toggle between AFD (classic) and GDB (modern) debugging modes
 
 ## Known Issues
 - Install Option for MAC Available only if Homebrew Installed [#6](https://github.com/NotTahaAli/NASM-Tools/issues/6)
@@ -28,6 +32,9 @@ This extension contributes the following settings:
 
 - `nasm-tools.dosboxCommand`: Command to Run DOSBOX or DOSBOX-X (e.g. dosbox or dosbox-x if in PATH)
 - `nasm-tools.nasmCommand`: Command to Run NASM (e.g. nasm if in PATH)
+- `nasm-tools.gdbCommand`: Command to Run GDB for debugging (e.g. gdb if in PATH)
+- `nasm-tools.i386ElfLdCommand`: Command to Run i386-elf-ld linker (e.g. i386-elf-ld if in PATH)
+- `nasm-tools.useModernDebugger`: Use GDB instead of AFD for debugging when available (boolean)
 
 ## Release Notes
 
@@ -88,3 +95,13 @@ This extension contributes the following settings:
 ### 1.3.0
 #### Features
 - Added Dependancy [NASM Language Support](https://marketplace.visualstudio.com/items?itemName=doinkythederp.nasm-language-support) for Assembly Error Validation
+
+### 1.4.0
+#### Features
+- **Modern Debugging Support**: Added GDB debugging capabilities as an alternative to AFD
+- **Automatic Tool Detection**: Extension now checks for GDB and i386-elf-ld availability on startup
+- **Installation Helpers**: Added prompts and helpers to install GDB and cross-compilation tools on Windows
+- **MSYS2 Integration**: Support for installing development tools via MSYS2
+- **Debugger Toggle**: New command to switch between AFD (classic) and GDB (modern) debugging modes
+- **Enhanced Configuration**: Added settings for GDB command, i386-elf-ld command, and debugger preference
+- **Fallback Logic**: Automatic fallback to AFD debugger when modern tools are not available

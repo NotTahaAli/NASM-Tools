@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import { enableExtension } from './commands/enable';
 import { assemble } from './commands/assemble';
 import { run } from './commands/run';
+import { checkDevTools } from './commands/devtools';
 
 let extensionActive = false;
 
@@ -75,10 +76,33 @@ export async function activate(context: vscode.ExtensionContext) {
 		return await run(true);
 	});
 
+	const toggleDebuggerCommand = vscode.commands.registerCommand('nasm-tools.toggleDebugger', async () => {
+		if (!extensionActive) {
+			vscode.window.showErrorMessage('NASM Tools Extension is not activated');
+			return;
+		}
+
+		const configs = vscode.workspace.getConfiguration('nasm-tools');
+		const useModernDebugger = configs.get('useModernDebugger') as boolean;
+		const devToolsResult = await checkDevTools();
+
+		if (!devToolsResult.gdbAvailable) {
+			vscode.window.showWarningMessage('GDB is not available. Please install GDB first to use modern debugging.');
+			return;
+		}
+
+		const newMode = !useModernDebugger;
+		await configs.update('useModernDebugger', newMode, vscode.ConfigurationTarget.Global);
+		
+		const debuggerName = newMode ? 'GDB (Modern)' : 'AFD (Classic)';
+		vscode.window.showInformationMessage(`Debugger switched to: ${debuggerName}`);
+	});
+
 	context.subscriptions.push(assembleCommand);
 	context.subscriptions.push(openDosBoxCommand);
 	context.subscriptions.push(runCommand);
 	context.subscriptions.push(debugCommand);
+	context.subscriptions.push(toggleDebuggerCommand);
 }
 
 // This method is called when your extension is deactivated

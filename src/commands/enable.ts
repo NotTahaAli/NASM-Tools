@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import commandExists from 'command-exists';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { checkDevTools, promptInstallDevTools } from './devtools';
 
 export async function enableExtension(context :vscode.ExtensionContext ,deactivate: ()=>void) {
 	// Check Current OS
@@ -306,6 +307,24 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 	const otherConfigs = vscode.workspace.getConfiguration("nasm");
 	vscode.window.showInformationMessage(otherConfigs.get("nasmPath") || "undefined");
 	otherConfigs.update("nasmPath", configs.get('nasmCommand'), vscode.ConfigurationTarget.Global);
+	
+	// Check for development tools (GDB and i386-elf-ld)
+	const devToolsResult = await checkDevTools();
+	
+	if (!devToolsResult.gdbAvailable || !devToolsResult.linkerAvailable) {
+		const os = process.platform;
+		if (os === 'win32') {
+			const continueSetup = await promptInstallDevTools();
+			if (!continueSetup) {
+				vscode.window.showWarningMessage('NASM Tools Extension activated with AFD debugger only. Modern debugging tools are not available.');
+			}
+		} else {
+			vscode.window.showInformationMessage('GDB and/or i386-elf-ld not found. Extension will use AFD debugger. For better debugging experience, install these tools manually.');
+		}
+	} else if (devToolsResult.shouldUseModernDebugger) {
+		vscode.window.showInformationMessage('NASM Tools Extension activated with modern debugging tools (GDB) available!');
+	}
+	
 	vscode.window.showInformationMessage('NASM Tools Extension Activated');
 	console.log(configs.get('nasmCommand'));
 	console.log(configs.get('dosboxCommand'));
