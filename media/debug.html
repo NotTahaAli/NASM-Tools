@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="${styleResetUri}" rel="stylesheet">
+    <link href="${styleVSCodeUri}" rel="stylesheet">
+    <link href="${styleDebugUri}" rel="stylesheet">
+    <title>NASM Debug Info</title>
+</head>
+<body>
+    <div class="debug-container">
+        <div class="registers-section">
+            <h3>CPU Registers</h3>
+            <div class="register-grid">
+                <div class="register-item">
+                    <label>AX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ax" value="1234" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>BX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="bx" value="5763" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>CX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="cx" value="ABCD" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="dx" value="1122" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SI:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="si" value="0000" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DI:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="di" value="FFFF" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>BP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="bp" value="7FFF" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="sp" value="7FFF" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>IP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ip" value="0100" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>FL:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="fl" value="0246" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>CS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="cs" value="1000" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ds" value="1000" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ss" value="1000" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>ES:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="es" value="1000" maxlength="4" oninput="validateHexInput(this)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flags-section">
+            <h3>CPU Flags</h3>
+            <div class="flags-grid">
+                <button class="flag-button flag-inactive" id="flag-cf" onclick="toggleFlag(this, 'CF')">
+                    <span class="flag-name">CF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-zf" onclick="toggleFlag(this, 'ZF')">
+                    <span class="flag-name">ZF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-sf" onclick="toggleFlag(this, 'SF')">
+                    <span class="flag-name">SF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-of" onclick="toggleFlag(this, 'OF')">
+                    <span class="flag-name">OF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-pf" onclick="toggleFlag(this, 'PF')">
+                    <span class="flag-name">PF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-af" onclick="toggleFlag(this, 'AF')">
+                    <span class="flag-name">AF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-if" onclick="toggleFlag(this, 'IF')">
+                    <span class="flag-name">IF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-df" onclick="toggleFlag(this, 'DF')">
+                    <span class="flag-name">DF</span>
+                    <span class="flag-value">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
+        //@ts-check
+
+        // This script will be run within the webview itself
+        // It cannot access the main VS Code APIs directly.
+        (function () {
+            const vscode = acquireVsCodeApi();
+
+            // Function to validate hex input and auto-capitalize
+            window.validateHexInput = function(input) {
+                // Remove any non-hex characters and convert to uppercase
+                let value = input.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+                
+                // Ensure it doesn't exceed maxlength
+                if (input.maxLength && value.length > input.maxLength) {
+                    value = value.substring(0, input.maxLength);
+                }
+                
+                // Update the input value
+                input.value = value;
+                
+                // Trigger change event for register updates
+                handleRegisterChange(input);
+            };
+
+            // Handle register value changes
+            function handleRegisterChange(input) {
+                const registerName = input.id.toUpperCase();
+                const value = input.value;
+                
+                console.log(`Register ${registerName} changed to: ${value}`);
+                
+                vscode.postMessage({
+                    type: 'updateRegister',
+                    register: registerName,
+                    value: value
+                });
+            }
+
+            // Handle flag toggle
+            window.toggleFlag = function(button, flagName) {
+                const isActive = button.classList.contains('flag-active');
+                const newValue = !isActive;
+                
+                // Update button appearance
+                if (newValue) {
+                    button.classList.remove('flag-inactive');
+                    button.classList.add('flag-active');
+                    button.querySelector('.flag-value').textContent = '1';
+                } else {
+                    button.classList.remove('flag-active');
+                    button.classList.add('flag-inactive');
+                    button.querySelector('.flag-value').textContent = '0';
+                }
+                
+                console.log(`Flag ${flagName} changed to: ${newValue}`);
+                
+                vscode.postMessage({
+                    type: 'toggleFlag',
+                    flag: flagName,
+                    value: newValue
+                });
+            };
+
+            // Handle messages from the extension
+            window.addEventListener('message', event => {
+                const message = event.data;
+                
+                switch (message.type) {
+                    case 'setPausedState':
+                        setPausedState(message.isPaused);
+                        break;
+                    case 'updateDebugInfo':
+                        updateDebugInfo(message.registers, message.flags);
+                        break;
+                }
+            });
+
+            function setPausedState(isPaused) {
+                console.log('Setting paused state:', isPaused);
+                
+                // Enable/disable all register inputs
+                document.querySelectorAll('input[type="text"]').forEach(input => {
+                    input.disabled = !isPaused;
+                });
+                
+                // Enable/disable all flag buttons
+                document.querySelectorAll('.flag-button').forEach(button => {
+                    button.disabled = !isPaused;
+                });
+            }
+
+            function updateDebugInfo(registers, flags) {
+                console.log('Updating debug info with registers:', registers, 'flags:', flags);
+                
+                // Update register values
+                if (registers) {
+                    Object.entries(registers).forEach(([regName, value]) => {
+                        const input = document.getElementById(regName.toLowerCase());
+                        if (input) {
+                            input.value = typeof value === 'number' ? 
+                                value.toString(16).toUpperCase().padStart(4, '0') : 
+                                value.toString().toUpperCase();
+                        }
+                    });
+                }
+                
+                // Update flag states
+                if (flags) {
+                    Object.entries(flags).forEach(([flagName, isSet]) => {
+                        const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+                        if (button) {
+                            if (isSet) {
+                                button.classList.remove('flag-inactive');
+                                button.classList.add('flag-active');
+                                button.querySelector('.flag-value').textContent = '1';
+                            } else {
+                                button.classList.remove('flag-active');
+                                button.classList.add('flag-inactive');
+                                button.querySelector('.flag-value').textContent = '0';
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Signal that the webview is ready
+            console.log('Debug webview loaded, sending ready signal');
+            vscode.postMessage({ type: 'webviewReady' });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="${styleResetUri}" rel="stylesheet">
+    <link href="${styleVSCodeUri}" rel="stylesheet">
+    <link href="${styleDisassemblyUri}" rel="stylesheet">
+    <title>NASM Disassembly</title>
+</head>
+<body>
+    <div class="header">Assembly Disassembly & Memory</div>
+    
+    <div class="controls">
+        <button onclick="refreshDisassembly()">Refresh</button>
+        <button onclick="toggleBreakpoints()">Toggle Breakpoints</button>
+    </div>
+    
+    <div class="disasm-container" id="disassembly-content">
+        <div class="empty-state">
+            Disassembly will appear here when debugger is active...
+        </div>
+    </div>
+
+    <div class="memory-section">
+        <h3>Memory Examination</h3>
+        <div class="memory-controls">
+            <label for="memory-segment">Segment:</label>
+            <input type="text" id="memory-segment" value="DS" placeholder="DS" oninput="validateHexInput(this)">
+            <label for="memory-offset">Offset:</label>
+            <input type="text" id="memory-offset" value="0000" placeholder="0000" oninput="validateHexInput(this)">
+            <button onclick="examineMemory()">Examine</button>
+        </div>
+        <div class="memory-display" id="memory-display-1">
+            <div class="memory-header">Memory at DS:0000</div>
+            <div class="memory-content">
+                <div class="memory-row">
+                    <span class="memory-address">0000:</span>
+                    <span class="memory-bytes">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span>
+                    <span class="memory-ascii">................</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
+        //@ts-check
+
+        // This script will be run within the webview itself
+        // It cannot access the main VS Code APIs directly.
+        (function () {
+            const vscode = acquireVsCodeApi();
+            let disassemblyLines = [];
+            
+            // Handle messages from extension
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.type) {
+                    case 'updateDisassembly':
+                        disassemblyLines = message.lines;
+                        updateDisassemblyDisplay();
+                        break;
+                    case 'updateMemorySection':
+                        updateMemorySection(message.sectionId, message.memoryData, message.baseAddress);
+                        break;
+                }
+            });
+
+            // Function to validate hex input and auto-capitalize
+            window.validateHexInput = function(input) {
+                // Remove any non-hex characters and convert to uppercase
+                let value = input.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+                
+                // Ensure it doesn't exceed maxlength
+                if (input.maxLength && value.length > input.maxLength) {
+                    value = value.substring(0, input.maxLength);
+                }
+                
+                // Update the input value
+                input.value = value;
+            };
+
+            // Memory examination function
+            window.examineMemory = function() {
+                const segment = document.getElementById('memory-segment').value;
+                const offset = document.getElementById('memory-offset').value;
+                
+                console.log(`Examining memory at ${segment}:${offset}`);
+                
+                vscode.postMessage({
+                    type: 'examineMemory',
+                    segment: segment,
+                    offset: offset,
+                    sectionId: 'memory-display-1'
+                });
+            };
+            
+            function updateDisassemblyDisplay() {
+                const container = document.getElementById('disassembly-content');
+                
+                if (!disassemblyLines || disassemblyLines.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No disassembly data available</div>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                disassemblyLines.forEach((line, index) => {
+                    const div = document.createElement('div');
+                    let classes = 'disasm-line';
+                    if (line.current) classes += ' disasm-current';
+                    if (line.breakpoint) classes += ' disasm-breakpoint';
+                    div.className = classes;
+                    
+                    div.innerHTML = `
+                        <span class="disasm-address">${line.address}</span>
+                        <span class="disasm-bytes">${line.bytes || ''}</span>
+                        <span class="disasm-instruction">${line.instruction}</span>
+                        <span class="disasm-operands">${line.operands || ''}</span>
+                    `;
+                    
+                    // Add click handlers
+                    div.addEventListener('click', () => {
+                        vscode.postMessage({
+                            type: 'gotoAddress',
+                            address: line.address
+                        });
+                    });
+                    
+                    div.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        vscode.postMessage({
+                            type: 'setBreakpoint',
+                            address: line.address
+                        });
+                    });
+                    
+                    container.appendChild(div);
+                });
+            }
+            
+            window.refreshDisassembly = function() {
+                vscode.postMessage({ type: 'refreshDisassembly' });
+            };
+            
+            window.toggleBreakpoints = function() {
+                vscode.postMessage({ type: 'toggleBreakpoints' });
+            };
+
+            function updateMemorySection(sectionId, memoryData, baseAddress) {
+                const section = document.getElementById(sectionId);
+                if (!section) return;
+                
+                const header = section.querySelector('.memory-header');
+                const content = section.querySelector('.memory-content');
+                
+                if (header) {
+                    header.textContent = `Memory at ${baseAddress.toString(16).toUpperCase().padStart(4, '0')}:0000`;
+                }
+                
+                if (content && memoryData) {
+                    content.innerHTML = '';
+                    
+                    // Display memory in 16-byte rows
+                    for (let i = 0; i < memoryData.length; i += 16) {
+                        const rowData = memoryData.slice(i, i + 16);
+                        const address = (baseAddress + i).toString(16).toUpperCase().padStart(4, '0');
+                        
+                        const bytesHex = rowData.map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+                        const ascii = rowData.map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
+                        
+                        const row = document.createElement('div');
+                        row.className = 'memory-row';
+                        row.innerHTML = `
+                            <span class="memory-address">${address}:</span>
+                            <span class="memory-bytes">${bytesHex.padEnd(47, ' ')}</span>
+                            <span class="memory-ascii">${ascii}</span>
+                        `;
+                        content.appendChild(row);
+                    }
+                }
+            }
+            
+            // Show sample data initially
+            setTimeout(() => {
+                const sampleLines = [
+                    { address: '1000:0100', bytes: 'B8 34 12', instruction: 'MOV', operands: 'AX, 1234h', current: false },
+                    { address: '1000:0103', bytes: '01 D8', instruction: 'ADD', operands: 'AX, BX', current: true },
+                    { address: '1000:0105', bytes: 'EB 09', instruction: 'JMP', operands: 'SHORT 0110h', current: false },
+                    { address: '1000:0107', bytes: '90', instruction: 'NOP', operands: '', current: false },
+                    { address: '1000:0108', bytes: 'B9 FF FF', instruction: 'MOV', operands: 'CX, FFFFh', current: false },
+                    { address: '1000:010B', bytes: '48', instruction: 'DEC', operands: 'AX', current: false },
+                    { address: '1000:010C', bytes: '75 FB', instruction: 'JNZ', operands: 'SHORT 0109h', current: false },
+                    { address: '1000:010E', bytes: 'CD 20', instruction: 'INT', operands: '20h', current: false },
+                ];
+                
+                disassemblyLines = sampleLines;
+                updateDisassemblyDisplay();
+            }, 1000);
+            
+            // Signal that the webview is ready
+            console.log('Disassembly panel loaded and interactive');
+            vscode.postMessage({ type: 'webviewReady' });
+        })();
+    </script>
+</body>
+</html>

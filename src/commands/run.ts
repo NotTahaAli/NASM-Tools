@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import { assemble } from "./assemble";
 import { dirname, join } from 'path';
 import { debug } from 'console';
+import { DebugWebViewProvider } from '../views/debugWebView';
 
-export async function run(debugMode = false) {
+export async function run(debugMode = false, debugViewProvider?: DebugWebViewProvider) {
 
     // pass debug mode to assemble function and generate elf file for debugging if gdb
     if (!await assemble("runner", debugMode)) {
@@ -61,7 +62,13 @@ export async function run(debugMode = false) {
                     trace: true, 
                     traceResponse: true
                 }
-            })
+            });
+
+            // Listen for debug session termination
+            const disposable = vscode.debug.onDidTerminateDebugSession((session) => {
+                // Clean up when debugging ends
+                disposable.dispose(); // Clean up the listener
+            });
 
         } else {
             vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [

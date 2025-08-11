@@ -1,0 +1,222 @@
+body {
+    font-family: 'Courier New', monospace;
+    background-color: var(--vscode-editor-background);
+    color: var(--vscode-editor-foreground);
+    margin: 0;
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.3;
+}
+
+.header {
+    background-color: var(--vscode-titleBar-activeBackground);
+    color: var(--vscode-titleBar-activeForeground);
+    padding: 8px 12px;
+    margin: -16px -16px 16px -16px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--vscode-panel-border);
+    font-size: 12px;
+}
+
+.disasm-container {
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    height: calc(100vh - 60px);
+}
+
+.disasm-line {
+    display: flex;
+    padding: 2px 6px;
+    margin: 1px 0;
+    border-radius: 2px;
+    white-space: nowrap;
+    min-width: fit-content;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.disasm-line:hover {
+    background-color: var(--vscode-list-hoverBackground);
+}
+
+.disasm-current {
+    background-color: var(--vscode-editor-lineHighlightBackground);
+    border-left: 3px solid var(--vscode-debugTokenExpression-name);
+}
+
+.disasm-breakpoint {
+    border-left: 3px solid var(--vscode-debugIcon-breakpointForeground);
+}
+
+.disasm-address {
+    color: var(--vscode-symbolIcon-numberForeground);
+    font-weight: bold;
+    min-width: 100px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.disasm-bytes {
+    color: var(--vscode-symbolIcon-colorForeground);
+    min-width: 100px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.disasm-instruction {
+    color: var(--vscode-symbolIcon-keywordForeground);
+    font-weight: bold;
+    min-width: 60px;
+    margin-right: 12px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+
+.disasm-operands {
+    color: var(--vscode-symbolIcon-variableForeground);
+    flex-grow: 1;
+    font-size: 12px;
+}
+
+.empty-state {
+    text-align: center;
+    color: var(--vscode-descriptionForeground);
+    font-style: italic;
+    padding: 40px;
+    font-size: 14px;
+}
+
+.controls {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: var(--vscode-sideBar-background);
+    border-radius: 4px;
+    border: 1px solid var(--vscode-panel-border);
+}
+
+.controls button {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 4px 8px;
+    margin-right: 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.controls button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.memory-section {
+    margin-top: 20px;
+    border-top: 1px solid var(--vscode-panel-border);
+    padding-top: 16px;
+}
+
+.memory-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: var(--vscode-foreground);
+    font-weight: bold;
+}
+
+.memory-controls {
+    margin-bottom: 12px;
+    padding: 8px;
+    background-color: var(--vscode-sideBar-background);
+    border-radius: 4px;
+    border: 1px solid var(--vscode-panel-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.memory-controls label {
+    font-size: 11px;
+    color: var(--vscode-foreground);
+    font-weight: bold;
+}
+
+.memory-controls input {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border: 1px solid var(--vscode-input-border);
+    padding: 4px 6px;
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    width: 60px;
+}
+
+.memory-controls input:focus {
+    outline: none;
+    border-color: var(--vscode-focusBorder);
+}
+
+.memory-controls button {
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    padding: 4px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.memory-controls button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
+
+.memory-display {
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.memory-header {
+    background-color: var(--vscode-titleBar-activeBackground);
+    color: var(--vscode-titleBar-activeForeground);
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--vscode-panel-border);
+}
+
+.memory-content {
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.memory-row {
+    display: flex;
+    margin-bottom: 2px;
+    padding: 1px 0;
+}
+
+.memory-address {
+    color: var(--vscode-debugTokenExpression-number);
+    width: 60px;
+    flex-shrink: 0;
+    font-weight: bold;
+}
+
+.memory-bytes {
+    color: var(--vscode-debugTokenExpression-string);
+    width: 400px;
+    flex-shrink: 0;
+    margin: 0 12px;
+}
+
+.memory-ascii {
+    color: var(--vscode-debugTokenExpression-value);
+    font-family: 'Courier New', monospace;
+}

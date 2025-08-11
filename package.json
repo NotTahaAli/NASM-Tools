@@ -10,7 +10,7 @@
     "url": "https://github.com/NotTahaAli"
   },
   "engines": {
-    "vscode": "^1.46.0"
+    "vscode": "^1.49.0"
   },
   "repository": {
     "type": "git",
@@ -47,6 +47,40 @@
         "title": "NASM Tools: Assemble and Debug Current File"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nasm-tools",
+          "title": "NASM Tools",
+          "icon": "images\\icon.png"
+        }
+      ],
+      "panel": [
+        {
+          "id": "nasm-disassembly",
+          "title": "NASM Disassembly",
+          "icon": "images\\icon.png"
+        }
+      ]
+    },
+    "views": {
+      "nasm-tools": [
+        {
+          "id": "nasm-tools.debug-view",
+          "name": "NASM Debug Info",
+          "type": "webview", 
+          "icon": "images\\icon.png"
+        }
+      ],
+      "nasm-disassembly": [
+        {
+          "id": "nasm-tools.disassembly-view",
+          "name": "Assembly Disassembly",
+          "type": "webview",
+          "icon": "images\\icon.png"
+        }
+      ]
+    },
     "configuration": [
       {
         "title": "NASM Tools",
@@ -113,7 +147,7 @@
     "@types/command-exists": "^1.2.3",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
-    "@types/vscode": "^1.46.0",
+    "@types/vscode": "^1.49.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",
