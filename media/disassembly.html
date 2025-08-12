@@ -7,38 +7,246 @@
     <link href="${styleResetUri}" rel="stylesheet">
     <link href="${styleVSCodeUri}" rel="stylesheet">
     <link href="${styleDisassemblyUri}" rel="stylesheet">
-    <title>NASM Disassembly</title>
+    <title>NASM Memory Disassembly</title>
 </head>
 <body>
-    <div class="header">Assembly Disassembly & Memory</div>
-    
-    <div class="controls">
-        <button onclick="refreshDisassembly()">Refresh</button>
-        <button onclick="toggleBreakpoints()">Toggle Breakpoints</button>
-    </div>
-    
-    <div class="disasm-container" id="disassembly-content">
-        <div class="empty-state">
-            Disassembly will appear here when debugger is active...
-        </div>
-    </div>
-
-    <div class="memory-section">
-        <h3>Memory Examination</h3>
-        <div class="memory-controls">
-            <label for="memory-segment">Segment:</label>
-            <input type="text" id="memory-segment" value="DS" placeholder="DS" oninput="validateHexInput(this)">
-            <label for="memory-offset">Offset:</label>
-            <input type="text" id="memory-offset" value="0000" placeholder="0000" oninput="validateHexInput(this)">
-            <button onclick="examineMemory()">Examine</button>
-        </div>
-        <div class="memory-display" id="memory-display-1">
-            <div class="memory-header">Memory at DS:0000</div>
+    <div class="disasm-container">
+        <div class="memory-section">
+            <div class="memory-header">
+                <span class="segment-label">DS</span>
+                :
+                <span class="offset-label">SI</span>
+            </div>
+            <div class="address-headers">
+                <span class="address-spacer"></span>
+                <div class="hex-headers">
+                    <span class="hex-header">0</span>
+                    <span class="hex-header">1</span>
+                    <span class="hex-header">2</span>
+                    <span class="hex-header">3</span>
+                    <span class="hex-header">4</span>
+                    <span class="hex-header">5</span>
+                    <span class="hex-header">6</span>
+                    <span class="hex-header">7</span>
+                    <span class="hex-header">8</span>
+                    <span class="hex-header">9</span>
+                    <span class="hex-header">A</span>
+                    <span class="hex-header">B</span>
+                    <span class="hex-header">C</span>
+                    <span class="hex-header">D</span>
+                    <span class="hex-header">E</span>
+                    <span class="hex-header">F</span>
+                </div>
+                <span class="ascii-header">ASCII</span>
+            </div>
             <div class="memory-content">
                 <div class="memory-row">
-                    <span class="memory-address">0000:</span>
-                    <span class="memory-bytes">00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00</span>
-                    <span class="memory-ascii">................</span>
+                    <span class="address">1000:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1010:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1020:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1030:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="memory-section">
+            <div class="memory-header">
+                <span class="segment-label">ES</span>
+                :
+                <span class="offset-label">DI</span>
+            </div>
+            <div class="address-headers">
+                <span class="address-spacer"></span>
+                <div class="hex-headers">
+                    <span class="hex-header">0</span>
+                    <span class="hex-header">1</span>
+                    <span class="hex-header">2</span>
+                    <span class="hex-header">3</span>
+                    <span class="hex-header">4</span>
+                    <span class="hex-header">5</span>
+                    <span class="hex-header">6</span>
+                    <span class="hex-header">7</span>
+                    <span class="hex-header">8</span>
+                    <span class="hex-header">9</span>
+                    <span class="hex-header">A</span>
+                    <span class="hex-header">B</span>
+                    <span class="hex-header">C</span>
+                    <span class="hex-header">D</span>
+                    <span class="hex-header">E</span>
+                    <span class="hex-header">F</span>
+                </div>
+                <span class="ascii-header">ASCII</span>
+            </div>
+            <div class="memory-content">
+                <div class="memory-row">
+                    <span class="address">1000:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1010:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1020:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
+                </div>
+                <div class="memory-row">
+                    <span class="address">1030:</span>
+                    <div class="hex-inputs">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                        <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
+                    </div>
+                    <div class="ascii-display">................</div>
                 </div>
             </div>
         </div>
@@ -51,21 +259,6 @@
         // It cannot access the main VS Code APIs directly.
         (function () {
             const vscode = acquireVsCodeApi();
-            let disassemblyLines = [];
-            
-            // Handle messages from extension
-            window.addEventListener('message', event => {
-                const message = event.data;
-                switch (message.type) {
-                    case 'updateDisassembly':
-                        disassemblyLines = message.lines;
-                        updateDisassemblyDisplay();
-                        break;
-                    case 'updateMemorySection':
-                        updateMemorySection(message.sectionId, message.memoryData, message.baseAddress);
-                        break;
-                }
-            });
 
             // Function to validate hex input and auto-capitalize
             window.validateHexInput = function(input) {
@@ -79,128 +272,102 @@
                 
                 // Update the input value
                 input.value = value;
+                
+                // Update ASCII representation
+                updateAsciiForRow(input);
+                
+                // Notify extension of memory change
+                handleMemoryChange(input);
             };
 
-            // Memory examination function
-            window.examineMemory = function() {
-                const segment = document.getElementById('memory-segment').value;
-                const offset = document.getElementById('memory-offset').value;
+            function updateAsciiForRow(changedInput) {
+                const memoryRow = changedInput.closest('.memory-row');
+                const hexInputs = memoryRow.querySelectorAll('.hex-input');
+                const asciiDisplay = memoryRow.querySelector('.ascii-display');
                 
-                console.log(`Examining memory at ${segment}:${offset}`);
+                let asciiString = '';
+                hexInputs.forEach(input => {
+                    const hexValue = input.value.padEnd(2, '0');
+                    const byteValue = parseInt(hexValue, 16);
+                    
+                    if (byteValue >= 32 && byteValue <= 126) {
+                        asciiString += String.fromCharCode(byteValue);
+                    } else {
+                        asciiString += '.';
+                    }
+                });
+                
+                asciiDisplay.textContent = asciiString;
+            }
+
+            function handleMemoryChange(input) {
+                const memoryRow = input.closest('.memory-row');
+                const address = memoryRow.querySelector('.address').textContent.replace(':', '');
+                const hexInputs = memoryRow.querySelectorAll('.hex-input');
+                const section = input.closest('.memory-section');
+                const sectionIndex = Array.from(document.querySelectorAll('.memory-section')).indexOf(section);
+                
+                const bytes = Array.from(hexInputs).map(inp => inp.value.padEnd(2, '0'));
+                
+                console.log(`Memory changed at ${address}, section ${sectionIndex}:`, bytes);
                 
                 vscode.postMessage({
-                    type: 'examineMemory',
-                    segment: segment,
-                    offset: offset,
-                    sectionId: 'memory-display-1'
-                });
-            };
-            
-            function updateDisassemblyDisplay() {
-                const container = document.getElementById('disassembly-content');
-                
-                if (!disassemblyLines || disassemblyLines.length === 0) {
-                    container.innerHTML = '<div class="empty-state">No disassembly data available</div>';
-                    return;
-                }
-                
-                container.innerHTML = '';
-                
-                disassemblyLines.forEach((line, index) => {
-                    const div = document.createElement('div');
-                    let classes = 'disasm-line';
-                    if (line.current) classes += ' disasm-current';
-                    if (line.breakpoint) classes += ' disasm-breakpoint';
-                    div.className = classes;
-                    
-                    div.innerHTML = `
-                        <span class="disasm-address">${line.address}</span>
-                        <span class="disasm-bytes">${line.bytes || ''}</span>
-                        <span class="disasm-instruction">${line.instruction}</span>
-                        <span class="disasm-operands">${line.operands || ''}</span>
-                    `;
-                    
-                    // Add click handlers
-                    div.addEventListener('click', () => {
-                        vscode.postMessage({
-                            type: 'gotoAddress',
-                            address: line.address
-                        });
-                    });
-                    
-                    div.addEventListener('contextmenu', (e) => {
-                        e.preventDefault();
-                        vscode.postMessage({
-                            type: 'setBreakpoint',
-                            address: line.address
-                        });
-                    });
-                    
-                    container.appendChild(div);
+                    type: 'updateMemory',
+                    address: address,
+                    bytes: bytes,
+                    sectionIndex: sectionIndex
                 });
             }
-            
-            window.refreshDisassembly = function() {
-                vscode.postMessage({ type: 'refreshDisassembly' });
-            };
-            
-            window.toggleBreakpoints = function() {
-                vscode.postMessage({ type: 'toggleBreakpoints' });
-            };
 
-            function updateMemorySection(sectionId, memoryData, baseAddress) {
-                const section = document.getElementById(sectionId);
+            // Handle messages from extension
+            window.addEventListener('message', event => {
+                const message = event.data;
+                switch (message.type) {
+                    case 'updateMemorySection':
+                        updateMemorySection(message.sectionIndex, message.memoryData, message.baseAddress);
+                        break;
+                }
+            });
+
+            function updateMemorySection(sectionIndex, memoryData, baseAddress) {
+                const sections = document.querySelectorAll('.memory-section');
+                const section = sections[sectionIndex];
                 if (!section) return;
                 
-                const header = section.querySelector('.memory-header');
-                const content = section.querySelector('.memory-content');
+                const memoryRows = section.querySelectorAll('.memory-row');
                 
-                if (header) {
-                    header.textContent = `Memory at ${baseAddress.toString(16).toUpperCase().padStart(4, '0')}:0000`;
-                }
-                
-                if (content && memoryData) {
-                    content.innerHTML = '';
-                    
-                    // Display memory in 16-byte rows
-                    for (let i = 0; i < memoryData.length; i += 16) {
-                        const rowData = memoryData.slice(i, i + 16);
-                        const address = (baseAddress + i).toString(16).toUpperCase().padStart(4, '0');
+                memoryData.forEach((rowData, rowIndex) => {
+                    if (rowIndex < memoryRows.length) {
+                        const row = memoryRows[rowIndex];
+                        const hexInputs = row.querySelectorAll('.hex-input');
+                        const asciiDisplay = row.querySelector('.ascii-display');
                         
-                        const bytesHex = rowData.map(b => b.toString(16).toUpperCase().padStart(2, '0')).join(' ');
-                        const ascii = rowData.map(b => (b >= 32 && b <= 126) ? String.fromCharCode(b) : '.').join('');
+                        // Update hex inputs
+                        rowData.forEach((byte, byteIndex) => {
+                            if (byteIndex < hexInputs.length) {
+                                hexInputs[byteIndex].value = byte.toString(16).toUpperCase().padStart(2, '0');
+                            }
+                        });
                         
-                        const row = document.createElement('div');
-                        row.className = 'memory-row';
-                        row.innerHTML = `
-                            <span class="memory-address">${address}:</span>
-                            <span class="memory-bytes">${bytesHex.padEnd(47, ' ')}</span>
-                            <span class="memory-ascii">${ascii}</span>
-                        `;
-                        content.appendChild(row);
+                        // Update ASCII display
+                        const asciiString = rowData.map(byte => 
+                            (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.'
+                        ).join('');
+                        asciiDisplay.textContent = asciiString;
                     }
-                }
+                });
             }
-            
-            // Show sample data initially
-            setTimeout(() => {
-                const sampleLines = [
-                    { address: '1000:0100', bytes: 'B8 34 12', instruction: 'MOV', operands: 'AX, 1234h', current: false },
-                    { address: '1000:0103', bytes: '01 D8', instruction: 'ADD', operands: 'AX, BX', current: true },
-                    { address: '1000:0105', bytes: 'EB 09', instruction: 'JMP', operands: 'SHORT 0110h', current: false },
-                    { address: '1000:0107', bytes: '90', instruction: 'NOP', operands: '', current: false },
-                    { address: '1000:0108', bytes: 'B9 FF FF', instruction: 'MOV', operands: 'CX, FFFFh', current: false },
-                    { address: '1000:010B', bytes: '48', instruction: 'DEC', operands: 'AX', current: false },
-                    { address: '1000:010C', bytes: '75 FB', instruction: 'JNZ', operands: 'SHORT 0109h', current: false },
-                    { address: '1000:010E', bytes: 'CD 20', instruction: 'INT', operands: '20h', current: false },
-                ];
-                
-                disassemblyLines = sampleLines;
-                updateDisassemblyDisplay();
-            }, 1000);
+
+            // Initialize ASCII displays
+            document.querySelectorAll('.memory-row').forEach(row => {
+                const firstInput = row.querySelector('.hex-input');
+                if (firstInput) {
+                    updateAsciiForRow(firstInput);
+                }
+            });
             
             // Signal that the webview is ready
-            console.log('Disassembly panel loaded and interactive');
+            console.log('Memory disassembly webview loaded');
             vscode.postMessage({ type: 'webviewReady' });
         })();
     </script>

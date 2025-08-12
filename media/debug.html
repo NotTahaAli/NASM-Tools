@@ -280,9 +280,32 @@
                 }
             }
 
-            // Signal that the webview is ready
-            console.log('Debug webview loaded, sending ready signal');
-            vscode.postMessage({ type: 'webviewReady' });
+            // Signal that the webview is ready - add small delay and retry mechanism
+            console.log('Debug webview loaded, setting up ready signal');
+            
+            let readySignalSent = false;
+            let retryCount = 0;
+            const maxRetries = 5;
+            
+            function sendReadySignal() {
+                if (readySignalSent) return;
+                
+                console.log(`Sending webviewReady message (attempt ${retryCount + 1})`);
+                try {
+                    vscode.postMessage({ type: 'webviewReady' });
+                    readySignalSent = true;
+                    console.log('webviewReady message sent successfully');
+                } catch (error) {
+                    console.log('Error sending webviewReady message:', error);
+                    if (retryCount < maxRetries) {
+                        retryCount++;
+                        setTimeout(sendReadySignal, 200 * retryCount);
+                    }
+                }
+            }
+            
+            // Send initial ready signal after a small delay
+            setTimeout(sendReadySignal, 100);
         })();
     </script>
 </body>

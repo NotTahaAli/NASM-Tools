@@ -1,11 +1,15 @@
 body {
-    font-family: 'Courier New', monospace;
-    background-color: var(--vscode-editor-background);
-    color: var(--vscode-editor-foreground);
+    font-family: var(--vscode-editor-font-family);
+    background-color: var(--vscode-sideBar-background);
+    color: var(--vscode-foreground);
     margin: 0;
-    padding: 16px;
+    padding: 0;
     font-size: 13px;
     line-height: 1.3;
+}
+
+.disasm-container {
+    padding: 16px;
 }
 
 .header {
@@ -16,37 +20,164 @@ body {
     font-weight: bold;
     border-bottom: 1px solid var(--vscode-panel-border);
     font-size: 12px;
+    text-align: center;
 }
 
-.disasm-container {
-    width: 100%;
+.memory-section {
+    margin-bottom: 24px;
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    background-color: var(--vscode-editor-background);
     overflow-x: auto;
-    overflow-y: auto;
-    height: calc(100vh - 60px);
 }
 
-.disasm-line {
+.memory-header {
+    background-color: var(--vscode-input-background);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    padding: 8px 12px;
     display: flex;
-    padding: 2px 6px;
-    margin: 1px 0;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.segment-label,
+.offset-label {
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    padding: 4px 8px;
+    background-color: var(--vscode-button-secondaryBackground);
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 3px;
+    min-width: 24px;
+    text-align: center;
+}
+
+.address-headers {
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    background-color: var(--vscode-titleBar-activeBackground);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    font-size: 11px;
+    color: var(--vscode-titleBar-activeForeground);
+    font-weight: bold;
+}
+
+.address-spacer {
+    min-width: 50px;
+    margin-right: 8px;
+}
+
+.hex-headers {
+    display: flex;
+    gap: 2px;
+    margin-right: 16px;
+}
+
+.hex-header {
+    width: 20px;
+    text-align: center;
+    color: var(--vscode-titleBar-activeForeground);
+    font-size: 10px;
+}
+
+.hex-header:nth-child(8) {
+    margin-right: 12px;
+}
+
+.ascii-header {
+    color: var(--vscode-titleBar-activeForeground);
+    font-size: 10px;
+    min-width: 128px;
+    text-align: center;
+}
+
+.memory-content {
+    padding: 12px;
+}
+
+.memory-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.address {
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    min-width: 50px;
+    margin-right: 8px;
+}
+
+.hex-inputs {
+    display: flex;
+    gap: 2px;
+    margin-right: 16px;
+}
+
+.hex-input {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-foreground);
+    border: 1px solid var(--vscode-input-border);
     border-radius: 2px;
-    white-space: nowrap;
-    min-width: fit-content;
-    cursor: pointer;
-    border-left: 3px solid transparent;
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0;
+    line-height: 1;
 }
 
-.disasm-line:hover {
-    background-color: var(--vscode-list-hoverBackground);
+.hex-input:nth-child(8) {
+    margin-right: 12px;
 }
 
-.disasm-current {
-    background-color: var(--vscode-editor-lineHighlightBackground);
-    border-left: 3px solid var(--vscode-debugTokenExpression-name);
+.hex-input:focus {
+    outline: none;
+    border-color: var(--vscode-focusBorder);
 }
 
-.disasm-breakpoint {
-    border-left: 3px solid var(--vscode-debugIcon-breakpointForeground);
+.hex-input:disabled {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-disabledForeground);
+    opacity: 0.6;
+}
+
+.ascii-display {
+    color: var(--vscode-foreground);
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
+    background-color: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    padding: 2px 6px;
+    min-width: 128px;
+    white-space: pre;
+    line-height: 1;
+}
+
+/* Responsive design for smaller screens */
+@media (max-width: 600px) {
+    .memory-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .hex-inputs {
+        margin-right: 0;
+        flex-wrap: wrap;
+    }
+    
+    .hex-input {
+        width: 28px;
+    }
 }
 
 .disasm-address {

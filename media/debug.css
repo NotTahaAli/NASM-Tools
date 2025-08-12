@@ -114,12 +114,12 @@ h3 {
     flex-direction: row;
     align-items: baseline;
     justify-content: center;
-    padding: 6px 8px;
+    padding: 8px 10px;
     border: 1px solid var(--vscode-panel-border);
     border-radius: 4px;
     cursor: pointer;
     font-size: 12px;
-    min-height: 30px;
+    min-height: 40px;
     transition: all 0.2s ease;
     gap: 8px;
     line-height: 1;
@@ -131,15 +131,15 @@ h3 {
 }
 
 .flag-active {
-    background-color: #4CAF50;
+    background-color: #66BB6A;
     color: white;
-    border-color: #4CAF50;
+    border-color: #66BB6A;
 }
 
 .flag-inactive {
-    background-color: #f3483c;
+    background-color: #EF5350;
     color: white;
-    border-color: #f3483c;
+    border-color: #EF5350;
 }
 
 .flag-name {
@@ -165,7 +165,8 @@ h3 {
         flex-direction: column;
         gap: 2px;
         align-items: center;
-        padding: 4px 6px;
+        padding: 6px 8px;
+        min-height: 35px;
     }
 }
 
@@ -180,8 +181,8 @@ h3 {
         flex-direction: column;
         gap: 1px;
         align-items: center;
-        padding: 3px 4px;
+        padding: 4px 6px;
         font-size: 10px;
-        min-height: 25px;
+        min-height: 30px;
     }
 }
