@@ -1,66 +1,53 @@
 import * as vscode from 'vscode';
+import { BaseWebViewProvider } from './baseWebView';
 
-function getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
-
-export class DisassemblyWebViewProvider implements vscode.WebviewViewProvider {
+export class DisassemblyWebViewProvider extends BaseWebViewProvider {
     public static readonly viewType = 'nasm-tools.disassembly-view';
-    private _view?: vscode.WebviewView;
-    private _webviewReady = false;
-    private _isDebuggerPaused = false;
     private _registerValues: {[key: string]: number} = {}; // Store register values for memory examination
 
-    constructor(private readonly _extensionUri: vscode.Uri) {}
+    constructor(extensionUri: vscode.Uri) {
+        super(extensionUri);
+    }
 
-    public resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken,
-    ) {
-        this._view = webviewView;
+    // Implement abstract methods from base class
+    public get viewType(): string {
+        return DisassemblyWebViewProvider.viewType;
+    }
 
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [
-                this._extensionUri,
-                vscode.Uri.joinPath(this._extensionUri, 'media')
-            ]
-        };
+    protected getHtmlFilename(): string {
+        return 'disassembly.html';
+    }
 
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
+    protected getCssFilename(): string {
+        return 'disassembly.css';
+    }
 
-        // Handle messages from the webview
-        webviewView.webview.onDidReceiveMessage(data => {
-            switch (data.type) {
-                case 'webviewReady':
-                    console.log('Disassembly webview is ready!');
-                    this._webviewReady = true;
-                    // Force show this disassembly view when ready
-                    this.forceShowView();
-                    break;
-                case 'gotoAddress':
-                    this.handleGotoAddress(data.address);
-                    break;
-                case 'setBreakpoint':
-                    this.handleSetBreakpoint(data.address);
-                    break;
-                case 'refreshDisassembly':
-                    this.handleRefreshDisassembly();
-                    break;
-                case 'toggleBreakpoints':
-                    this.handleToggleBreakpoints();
-                    break;
-                case 'examineMemory':
-                    this.handleMemoryExamine(data.segment, data.offset, data.sectionId);
-                    break;
-            }
-        });
+    protected getCssTemplateVariableName(): string {
+        return 'styleDisassemblyUri';
+    }
+
+    protected getViewFocusCommand(): string {
+        return 'nasm-tools.disassembly-view.focus';
+    }
+
+    protected handleWebviewMessage(data: any): void {
+        switch (data.type) {
+            case 'gotoAddress':
+                this.handleGotoAddress(data.address);
+                break;
+            case 'setBreakpoint':
+                this.handleSetBreakpoint(data.address);
+                break;
+            case 'refreshDisassembly':
+                this.handleRefreshDisassembly();
+                break;
+            case 'toggleBreakpoints':
+                this.handleToggleBreakpoints();
+                break;
+            case 'examineMemory':
+                this.handleMemoryExamine(data.segment, data.offset, data.sectionId);
+                break;
+        }
     }
 
     public updateDisassembly(lines: any[]) {
@@ -72,22 +59,8 @@ export class DisassemblyWebViewProvider implements vscode.WebviewViewProvider {
         }
     }
 
-    public setDebuggerPaused(paused: boolean) {
-        this._isDebuggerPaused = paused;
-    }
-
     public updateRegisterValues(registerValues: {[key: string]: number}) {
         this._registerValues = registerValues;
-    }
-
-    public forceShowView() {
-        console.log('Forcing disassembly view to show...');
-        try {
-            // Force show the disassembly view
-            vscode.commands.executeCommand('nasm-tools.disassembly-view.focus');
-        } catch (error) {
-            console.log('Error forcing disassembly view to show:', error);
-        }
     }
 
     private handleRefreshDisassembly() {
@@ -296,31 +269,5 @@ export class DisassemblyWebViewProvider implements vscode.WebviewViewProvider {
     private handleSetBreakpoint(address: string) {
         // TODO: Implement breakpoint setting
         console.log('Set breakpoint at:', address);
-    }
-
-    private _getHtmlForWebview(webview: vscode.Webview) {
-        // Do the same for the stylesheets.
-        const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
-        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
-        const styleDisassemblyUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'disassembly.css'));
-
-        // Use a nonce to only allow a specific script to be run.
-        const nonce = getNonce();
-
-        // Read the HTML template
-        const fs = require('fs');
-        const path = require('path');
-        const htmlPath = path.join(this._extensionUri.fsPath, 'media', 'disassembly.html');
-        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-
-        // Replace template variables
-        htmlContent = htmlContent
-            .replace(/\$\{webview\.cspSource\}/g, webview.cspSource)
-            .replace(/\$\{nonce\}/g, nonce)
-            .replace(/\$\{styleResetUri\}/g, styleResetUri.toString())
-            .replace(/\$\{styleVSCodeUri\}/g, styleVSCodeUri.toString())
-            .replace(/\$\{styleDisassemblyUri\}/g, styleDisassemblyUri.toString());
-
-        return htmlContent;
     }
 }

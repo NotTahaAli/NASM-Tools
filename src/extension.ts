@@ -1,11 +1,8 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { enableExtension } from './commands/enable';
 import { assemble } from './commands/assemble';
 import { run } from './commands/run';
-import { DebugWebViewProvider } from './views/debugWebView';
-import { DisassemblyWebViewProvider } from './views/disassemblyWebView';
+import { DebugController } from './controllers/debugController';
 
 let extensionActive = false;
 
@@ -36,14 +33,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	}
 	extensionActive = true;
 	
-	const debugViewProvider = new DebugWebViewProvider(context.extensionUri);
-	const disassemblyViewProvider = new DisassemblyWebViewProvider(context.extensionUri);
-	
-	// Connect the providers so debug view can update disassembly view
-	debugViewProvider.setDisassemblyViewProvider(disassemblyViewProvider);
-	
-	// Connect the debug view to the disassembly view
-	debugViewProvider.setDisassemblyViewProvider(disassemblyViewProvider);
+	// Create debug controller to manage all webviews
+	const debugController = new DebugController(context, context.extensionUri);
 
 	const assembleCommand = vscode.commands.registerCommand('nasm-tools.assemble', async () => {
 		if (!extensionActive) {
@@ -81,62 +72,13 @@ export async function activate(context: vscode.ExtensionContext) {
 			return false;
 		}
 
-		return await run(true, debugViewProvider);
+		return await run(true, debugController.getDebugViewProvider());
 	});
 
 	context.subscriptions.push(assembleCommand);
 	context.subscriptions.push(openDosBoxCommand);
 	context.subscriptions.push(runCommand);
 	context.subscriptions.push(debugCommand);
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider(DebugWebViewProvider.viewType, debugViewProvider));
-	context.subscriptions.push(vscode.window.registerWebviewViewProvider(DisassemblyWebViewProvider.viewType, disassemblyViewProvider));
-
-	// Track debug session events for the webview
-	context.subscriptions.push(vscode.debug.onDidChangeActiveDebugSession((session) => {
-		console.log('Active debug session changed:', session?.type);
-		// Don't assume paused state here - let onDidChangeActiveStackItem handle it
-		// if (session && session.type === 'cppdbg') {
-		//     debugViewProvider.setDebuggerPaused(false); // Assume running when session starts
-		// }
-	}));
-
-	// Listen for debug session start/stop
-	context.subscriptions.push(vscode.debug.onDidStartDebugSession((session) => {
-		console.log('Debug session started:', session.type);
-		// Don't set paused state here - let onDidChangeActiveStackItem handle it
-		// if (session.type === 'cppdbg') {
-		//     debugViewProvider.setDebuggerPaused(false); // Running when started
-		// }
-	}));
-
-	context.subscriptions.push(vscode.debug.onDidTerminateDebugSession((session) => {
-		console.log('Debug session terminated:', session.type);
-		if (session.type === 'cppdbg') {
-			debugViewProvider.setDebuggerPaused(false); // Not paused when terminated
-		}
-	}));
-
-	// Listen for debug stack item changes (automatic pause/resume detection)
-	context.subscriptions.push(vscode.debug.onDidChangeActiveStackItem((stackItem) => {
-		console.log('Stack item changed:', stackItem?.constructor.name, 'timestamp:', Date.now());
-		
-		const session = vscode.debug.activeDebugSession;
-		if (!session || session.type !== 'cppdbg') {
-			console.log('No active cppdbg session - setting paused to false');
-			debugViewProvider.setDebuggerPaused(false);
-			return;
-		}
-		
-		if (stackItem instanceof vscode.DebugStackFrame) {
-			// Debugger is paused - stack frame available
-			console.log('Debugger paused - updating debug view (timestamp:', Date.now(), ')');
-			debugViewProvider.setDebuggerPaused(true);
-		} else {
-			// Debugger is running or no debug context
-			console.log('Debugger resumed - disabling inputs (timestamp:', Date.now(), ')');
-			debugViewProvider.setDebuggerPaused(false);
-		}
-	}));
 }
 
 // This method is called when your extension is deactivated

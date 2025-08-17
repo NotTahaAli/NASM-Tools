@@ -1,141 +1,62 @@
 // src/views/debugWebView.ts
 import * as vscode from 'vscode';
+import { BaseWebViewProvider } from './baseWebView';
 
-function getNonce() {
-    let text = '';
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 32; i++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
-
-export class DebugWebViewProvider implements vscode.WebviewViewProvider {
+export class DebugWebViewProvider extends BaseWebViewProvider {
     public static readonly viewType = 'nasm-tools.debug-view';
-    private _view?: vscode.WebviewView;
-    private _isDebuggerPaused = false;
-    private _webviewReady = false;
-    private _pendingState?: boolean; // Store pending state if webview not ready
-    private _registerValues: {[key: string]: number} = {}; // Store register values locally
-    private _disassemblyPanel?: vscode.WebviewPanel; // Disassembly panel for terminal area
-    private _disassemblyViewProvider?: any; // Reference to disassembly view provider
+    private _registerValues: {[key: string]: number} = {};
 
-    constructor(private readonly _extensionUri: vscode.Uri) {}
-
-    public resolveWebviewView(
-        webviewView: vscode.WebviewView,
-        context: vscode.WebviewViewResolveContext,
-        _token: vscode.CancellationToken,
-    ) {
-        console.log('resolveWebviewView called at:', Date.now());
-        this._view = webviewView;
-        this._webviewReady = false; // Reset ready state
-
-        webviewView.webview.options = {
-            enableScripts: true,
-            localResourceRoots: [
-                this._extensionUri,
-                vscode.Uri.joinPath(this._extensionUri, 'media')
-            ]
-        };
-
-        webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
-
-        // Handle messages from the webview
-        webviewView.webview.onDidReceiveMessage(data => {
-            switch (data.type) {
-                case 'webviewReady':
-                    console.log('Webview is ready! Sending current state if needed.');
-                    this._webviewReady = true;
-                    // Force show this debug view when ready
-                    this.forceShowView();
-                    // Handle any pending state or send current state
-                    if (this._pendingState !== undefined) {
-                        this._isDebuggerPaused = this._pendingState;
-                        this._pendingState = undefined;
-                    }
-                    this.updateWebviewState();
-                    break;
-                case 'updateRegister':
-                    this.handleRegisterUpdate(data.register, data.value);
-                    break;
-                case 'toggleFlag':
-                    this.handleFlagToggle(data.flag, data.value);
-                    break;
-            }
-        });
+    constructor(extensionUri: vscode.Uri) {
+        super(extensionUri);
     }
 
-    public setDebuggerPaused(paused: boolean) {
-        console.log('setDebuggerPaused called:', paused, 'timestamp:', Date.now());
-        this._isDebuggerPaused = paused;
-        
-        // Send state to webview if ready, otherwise store as pending
-        if (this._webviewReady && this._view) {
-            this.updateWebviewState();
-        } else {
-            console.log('Webview not ready yet, storing pending state:', paused);
-            this._pendingState = paused;
+    // Implement abstract methods from base class
+    public get viewType(): string {
+        return DebugWebViewProvider.viewType;
+    }
+
+    protected getHtmlFilename(): string {
+        return 'debug.html';
+    }
+
+    protected getCssFilename(): string {
+        return 'debug.css';
+    }
+
+    protected getCssTemplateVariableName(): string {
+        return 'styleDebugUri';
+    }
+
+    protected getViewFocusCommand(): string {
+        return 'nasm-tools.debug-view.focus';
+    }
+
+    protected handleWebviewMessage(data: any): void {
+        switch (data.type) {
+            case 'updateRegister':
+                this.handleRegisterUpdate(data.register, data.value);
+                break;
+            case 'toggleFlag':
+                this.handleFlagToggle(data.flag, data.value);
+                break;
         }
     }
 
-    public setDisassemblyViewProvider(disassemblyViewProvider: any) {
-        this._disassemblyViewProvider = disassemblyViewProvider;
+    public getRegisterValues(): {[key: string]: number} {
+        return this._registerValues;
     }
 
-    public forceShowView() {
-        console.log('Forcing debug view to show...');
-        try {
-            // Force show the debug view
-            vscode.commands.executeCommand('nasm-tools.debug-view.focus');
-        } catch (error) {
-            console.log('Error forcing debug view to show:', error);
-        }
-    }
+    protected updateWebviewState() {
+        // Call parent implementation first
+        super.updateWebviewState();
 
-    public showDisassemblyPanel() {
-        if (!this._disassemblyViewProvider) {
-            console.log('No disassembly view provider available');
-            return;
-        }
-        
-        // Prepare sample disassembly data
-        const sampleLines = [
-            { address: '1000:0100', bytes: 'B8 34 12', instruction: 'MOV', operands: 'AX, 1234h', current: false },
-            { address: '1000:0103', bytes: '01 D8', instruction: 'ADD', operands: 'AX, BX', current: true },
-            { address: '1000:0105', bytes: 'EB 09', instruction: 'JMP', operands: 'SHORT 0110h', current: false },
-            { address: '1000:0107', bytes: '90', instruction: 'NOP', operands: '', current: false },
-            { address: '1000:0108', bytes: 'B9 FF FF', instruction: 'MOV', operands: 'CX, FFFFh', current: false },
-            { address: '1000:010B', bytes: '48', instruction: 'DEC', operands: 'AX', current: false },
-            { address: '1000:010C', bytes: '75 FB', instruction: 'JNZ', operands: 'SHORT 0109h', current: false },
-            { address: '1000:010E', bytes: 'CD 20', instruction: 'INT', operands: '20h', current: false },
-        ];
-        
-        // Update the interactive disassembly view
-        this._disassemblyViewProvider.updateDisassembly(sampleLines);
-    }
-
-    private updateWebviewState() {
-        if (!this._view || !this._webviewReady) {
-            console.log('Cannot send message - view ready:', this._webviewReady, 'view defined:', !!this._view);
-            return;
-        }
-
-        // Send paused state to webview
-        console.log('Sending setPausedState message to webview:', this._isDebuggerPaused);
-        this._view.webview.postMessage({
-            type: 'setPausedState',
-            isPaused: this._isDebuggerPaused
-        });
-
-        // Extract and send debug info if debugger is paused and we have an active session
         const session = vscode.debug.activeDebugSession;
+
         if (this._isDebuggerPaused && session && session.type === 'cppdbg') {
             console.log('Debugger paused with active session, extracting debug info');
             this.extractDebugInfo();
-            
-            // Show disassembly panel when debugger pauses
-            this.showDisassemblyPanel();
+        } else {
+            console.log('Not extracting debug info - paused:', this._isDebuggerPaused, 'session type:', session?.type || 'none');
         }
     }
 
@@ -164,7 +85,7 @@ export class DebugWebViewProvider implements vscode.WebviewViewProvider {
                 let displayName = reg.toUpperCase();
 
                 // Remove 'e' prefix: eax -> AX, ebx -> BX, etc.
-                if (reg.startsWith('e')) {
+                if (reg !== 'es' && reg.startsWith('e')) {
                     displayName = displayName.substring(1);
                 }
                 
@@ -212,18 +133,12 @@ export class DebugWebViewProvider implements vscode.WebviewViewProvider {
             // Store register values locally for sharing with disassembly view
             this._registerValues = registerValues;
             
-            // Update disassembly view with register values if available
-            if (this._disassemblyViewProvider) {
-                this._disassemblyViewProvider.updateRegisterValues(registerValues);
-            }
-            
             // Update the webview with real GDB data
             if (this._view) {
                 this._view.webview.postMessage({
-                    type: 'updateDebugInfo',
-                    registers: registers,
+                    type: 'updateRegisterInfo',
+                    registers: registerValues,
                     flags: flags,
-                    disassemble: true,
                     isPaused: this._isDebuggerPaused
                 });
             }
@@ -264,18 +179,11 @@ export class DebugWebViewProvider implements vscode.WebviewViewProvider {
         }
 
         try {
-            // Parse hex value
-            const hexValue = value.replace('0x', '');
+            // ID sent which is already lowercased
+            let gdbRegisterName = registerName;
             
-            // Convert display name back to GDB register name
-            let gdbRegisterName = registerName.toLowerCase();
-            
-            if (registerName === 'FL') {
+            if (registerName === 'fl') {
                 gdbRegisterName = 'eflags';
-            } else if (registerName === 'IP') {
-                gdbRegisterName = 'eip';
-            } else if (registerName === 'SP') {
-                gdbRegisterName = 'esp';
             } else if (!['cs', 'ds', 'es', 'ss'].includes(gdbRegisterName)) {
                 // Add 'e' prefix for general purpose registers: ax -> eax, bx -> ebx, etc.
                 gdbRegisterName = 'e' + gdbRegisterName;
@@ -283,15 +191,15 @@ export class DebugWebViewProvider implements vscode.WebviewViewProvider {
             
             // Send GDB command to update register
             await session.customRequest('evaluate', {
-                expression: `set $${gdbRegisterName}=0x${hexValue}`,
+                expression: `-exec set $${gdbRegisterName}=0x${value}`,
                 context: 'repl'
             });
             
             // Update local register storage
-            this._registerValues[registerName] = parseInt(hexValue, 16);
+            this._registerValues[registerName.toUpperCase()] = parseInt(value, 16);
             
             // Refresh debug info after update
-            this.extractDebugInfo();
+            this.updateWebviewState();
         } catch (error) {
             console.log('Error updating register:', error);
         }
@@ -334,31 +242,5 @@ export class DebugWebViewProvider implements vscode.WebviewViewProvider {
         } catch (error) {
             console.log('Error updating flag:', error);
         }
-    }
-
-    private _getHtmlForWebview(webview: vscode.Webview) {
-        // Do the same for the stylesheets.
-        const styleResetUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'reset.css'));
-        const styleVSCodeUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'vscode.css'));
-        const styleDebugUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, 'media', 'debug.css'));
-
-        // Use a nonce to only allow a specific script to be run.
-        const nonce = getNonce();
-
-        // Read the HTML template
-        const fs = require('fs');
-        const path = require('path');
-        const htmlPath = path.join(this._extensionUri.fsPath, 'media', 'debug.html');
-        let htmlContent = fs.readFileSync(htmlPath, 'utf8');
-
-        // Replace template variables
-        htmlContent = htmlContent
-            .replace(/\$\{webview\.cspSource\}/g, webview.cspSource)
-            .replace(/\$\{nonce\}/g, nonce)
-            .replace(/\$\{styleResetUri\}/g, styleResetUri.toString())
-            .replace(/\$\{styleVSCodeUri\}/g, styleVSCodeUri.toString())
-            .replace(/\$\{styleDebugUri\}/g, styleDebugUri.toString());
-
-        return htmlContent;
     }
 }

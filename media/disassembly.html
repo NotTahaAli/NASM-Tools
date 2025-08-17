@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="${styleResetUri}" rel="stylesheet">
-    <link href="${styleVSCodeUri}" rel="stylesheet">
     <link href="${styleDisassemblyUri}" rel="stylesheet">
     <title>NASM Memory Disassembly</title>
 </head>
@@ -18,8 +16,8 @@
                 <span class="offset-label">SI</span>
             </div>
             <div class="address-headers">
-                <span class="address-spacer"></span>
                 <div class="hex-headers">
+                    <span class="hex-header header-spacer">1000:</span>
                     <span class="hex-header">0</span>
                     <span class="hex-header">1</span>
                     <span class="hex-header">2</span>
@@ -37,7 +35,6 @@
                     <span class="hex-header">E</span>
                     <span class="hex-header">F</span>
                 </div>
-                <span class="ascii-header">ASCII</span>
             </div>
             <div class="memory-content">
                 <div class="memory-row">
@@ -60,7 +57,6 @@
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                     </div>
-                    <div class="ascii-display">................</div>
                 </div>
                 <div class="memory-row">
                     <span class="address">1010:</span>
@@ -82,7 +78,6 @@
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                     </div>
-                    <div class="ascii-display">................</div>
                 </div>
                 <div class="memory-row">
                     <span class="address">1020:</span>
@@ -104,7 +99,6 @@
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                     </div>
-                    <div class="ascii-display">................</div>
                 </div>
                 <div class="memory-row">
                     <span class="address">1030:</span>
@@ -126,7 +120,6 @@
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                         <input type="text" class="hex-input" value="00" maxlength="2" oninput="validateHexInput(this)">
                     </div>
-                    <div class="ascii-display">................</div>
                 </div>
             </div>
         </div>
@@ -138,8 +131,8 @@
                 <span class="offset-label">DI</span>
             </div>
             <div class="address-headers">
-                <span class="address-spacer"></span>
                 <div class="hex-headers">
+                    <span class="hex-header header-spacer">1000:</span>
                     <span class="hex-header">0</span>
                     <span class="hex-header">1</span>
                     <span class="hex-header">2</span>
@@ -253,29 +246,27 @@
     </div>
 
     <script nonce="${nonce}">
-        //@ts-check
-
         // This script will be run within the webview itself
         // It cannot access the main VS Code APIs directly.
         (function () {
             const vscode = acquireVsCodeApi();
 
             // Function to validate hex input and auto-capitalize
-            window.validateHexInput = function(input) {
+            window.validateHexInput = function ( input ) {
                 // Remove any non-hex characters and convert to uppercase
-                let value = input.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
-                
+                let value = input.value.replace( /[^0-9A-Fa-f]/g, '' ).toUpperCase();
+
                 // Ensure it doesn't exceed maxlength
-                if (input.maxLength && value.length > input.maxLength) {
-                    value = value.substring(0, input.maxLength);
+                if ( input.maxLength && value.length > input.maxLength ) {
+                    value = value.substring( 0, input.maxLength );
                 }
-                
+
                 // Update the input value
                 input.value = value;
                 
                 // Update ASCII representation
                 updateAsciiForRow(input);
-                
+
                 // Notify extension of memory change
                 handleMemoryChange(input);
             };
@@ -284,19 +275,19 @@
                 const memoryRow = changedInput.closest('.memory-row');
                 const hexInputs = memoryRow.querySelectorAll('.hex-input');
                 const asciiDisplay = memoryRow.querySelector('.ascii-display');
-                
+
                 let asciiString = '';
                 hexInputs.forEach(input => {
                     const hexValue = input.value.padEnd(2, '0');
                     const byteValue = parseInt(hexValue, 16);
-                    
+
                     if (byteValue >= 32 && byteValue <= 126) {
                         asciiString += String.fromCharCode(byteValue);
                     } else {
                         asciiString += '.';
                     }
                 });
-                
+
                 asciiDisplay.textContent = asciiString;
             }
 
@@ -306,11 +297,11 @@
                 const hexInputs = memoryRow.querySelectorAll('.hex-input');
                 const section = input.closest('.memory-section');
                 const sectionIndex = Array.from(document.querySelectorAll('.memory-section')).indexOf(section);
-                
+
                 const bytes = Array.from(hexInputs).map(inp => inp.value.padEnd(2, '0'));
-                
+
                 console.log(`Memory changed at ${address}, section ${sectionIndex}:`, bytes);
-                
+
                 vscode.postMessage({
                     type: 'updateMemory',
                     address: address,
@@ -333,24 +324,24 @@
                 const sections = document.querySelectorAll('.memory-section');
                 const section = sections[sectionIndex];
                 if (!section) return;
-                
+
                 const memoryRows = section.querySelectorAll('.memory-row');
-                
+
                 memoryData.forEach((rowData, rowIndex) => {
                     if (rowIndex < memoryRows.length) {
                         const row = memoryRows[rowIndex];
                         const hexInputs = row.querySelectorAll('.hex-input');
                         const asciiDisplay = row.querySelector('.ascii-display');
-                        
+
                         // Update hex inputs
                         rowData.forEach((byte, byteIndex) => {
                             if (byteIndex < hexInputs.length) {
                                 hexInputs[byteIndex].value = byte.toString(16).toUpperCase().padStart(2, '0');
                             }
                         });
-                        
+
                         // Update ASCII display
-                        const asciiString = rowData.map(byte => 
+                        const asciiString = rowData.map(byte =>
                             (byte >= 32 && byte <= 126) ? String.fromCharCode(byte) : '.'
                         ).join('');
                         asciiDisplay.textContent = asciiString;
@@ -365,7 +356,7 @@
                     updateAsciiForRow(firstInput);
                 }
             });
-            
+
             // Signal that the webview is ready
             console.log('Memory disassembly webview loaded');
             vscode.postMessage({ type: 'webviewReady' });

@@ -4,12 +4,16 @@ body {
     color: var(--vscode-foreground);
     margin: 0;
     padding: 0;
-    font-size: 13px;
-    line-height: 1.3;
+    font-size: 12px;
+    line-height: 1.24;
 }
 
 .disasm-container {
     padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(594px, 1fr));
+    gap: 10px;
+    flex-flow: wrap;
 }
 
 .header {
@@ -29,6 +33,7 @@ body {
     border-radius: 4px;
     background-color: var(--vscode-editor-background);
     overflow-x: auto;
+    width: 100%;
 }
 
 .memory-header {
@@ -57,7 +62,8 @@ body {
 .address-headers {
     display: flex;
     align-items: center;
-    padding: 6px 12px;
+    padding: 6px 8px;
+    gap: 2px;
     background-color: var(--vscode-titleBar-activeBackground);
     border-bottom: 1px solid var(--vscode-panel-border);
     font-size: 11px;
@@ -65,26 +71,36 @@ body {
     font-weight: bold;
 }
 
+.header-spacer {
+    padding: 0 !important;
+    font-size: 12px !important;
+    margin-right: 8px;
+    visibility: hidden;
+}
+
 .address-spacer {
-    min-width: 50px;
+    min-width: fit-content;
     margin-right: 8px;
 }
 
 .hex-headers {
     display: flex;
+    align-items: center;
+    margin-right: 10px;
     gap: 2px;
-    margin-right: 16px;
+    width: 100%;
 }
 
 .hex-header {
-    width: 20px;
+    width: 100%;
+    padding: 6px 8px;
     text-align: center;
     color: var(--vscode-titleBar-activeForeground);
     font-size: 10px;
 }
 
-.hex-header:nth-child(8) {
-    margin-right: 12px;
+.hex-header:nth-child(9) {
+    margin-right: 10px;
 }
 
 .ascii-header {
@@ -109,14 +125,14 @@ body {
 .address {
     color: var(--vscode-symbolIcon-variableForeground);
     font-weight: bold;
-    min-width: 50px;
+    min-width: fit-content;
     margin-right: 8px;
 }
 
 .hex-inputs {
     display: flex;
     gap: 2px;
-    margin-right: 16px;
+    margin-right: 10px;
 }
 
 .hex-input {
@@ -135,7 +151,7 @@ body {
 }
 
 .hex-input:nth-child(8) {
-    margin-right: 12px;
+    margin-right: 10px;
 }
 
 .hex-input:focus {
@@ -169,12 +185,12 @@ body {
         align-items: flex-start;
         gap: 8px;
     }
-    
+
     .hex-inputs {
         margin-right: 0;
         flex-wrap: wrap;
     }
-    
+
     .hex-input {
         width: 28px;
     }
@@ -184,7 +200,7 @@ body {
     color: var(--vscode-symbolIcon-numberForeground);
     font-weight: bold;
     min-width: 100px;
-    margin-right: 12px;
+    margin-right: 10px;
     flex-shrink: 0;
     font-size: 12px;
 }
@@ -192,7 +208,7 @@ body {
 .disasm-bytes {
     color: var(--vscode-symbolIcon-colorForeground);
     min-width: 100px;
-    margin-right: 12px;
+    margin-right: 10px;
     flex-shrink: 0;
     font-size: 12px;
 }
@@ -201,7 +217,7 @@ body {
     color: var(--vscode-symbolIcon-keywordForeground);
     font-weight: bold;
     min-width: 60px;
-    margin-right: 12px;
+    margin-right: 10px;
     flex-shrink: 0;
     font-size: 12px;
 }
