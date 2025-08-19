@@ -232,7 +232,7 @@ export class DebugWebViewProvider extends BaseWebViewProvider {
                     : `set $eflags &= ~(1 << ${bitPos})`; // Clear bit
                 
                 await session.customRequest('evaluate', {
-                    expression: flagExpression,
+                    expression: `-exec ${flagExpression}`,
                     context: 'repl'
                 });
             }

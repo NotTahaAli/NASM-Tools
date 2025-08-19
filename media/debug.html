@@ -179,6 +179,18 @@
                 
                 console.log(`Register ${registerName} changed to: ${value}`);
                 
+                // If FL register changed, update flag buttons
+                if (registerName === 'fl') {
+                    const flagsValue = parseInt(value, 16) || 0;
+                    
+                    Object.entries(flagBitMap).forEach(([flagName, bitPosition]) => {
+                        const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+                        const isSet = (flagsValue & (1 << bitPosition)) !== 0;
+
+                        updateFlagButtonState(button, isSet);
+                    });
+                }
+                
                 vscode.postMessage({
                     type: 'updateRegister',
                     register: registerName,
@@ -186,23 +198,72 @@
                 });
             }
 
+            // Flag bit positions (must match the mapping in debugWebView.ts)
+            const flagBitMap = {
+                'CF': 0,   // Carry
+                'PF': 2,   // Parity  
+                'AF': 4,   // Auxiliary
+                'ZF': 6,   // Zero
+                'SF': 7,   // Sign
+                'IF': 9,   // Interrupt
+                'DF': 10,  // Direction
+                'OF': 11   // Overflow
+            };
+
+            // Reusable function to update a single flag button's state
+            function updateFlagButtonState(button, isSet) {
+                if (button) {
+                    if (isSet) {
+                        button.classList.remove('flag-inactive');
+                        button.classList.add('flag-active');
+                        button.querySelector('.flag-value').textContent = '1';
+                    } else {
+                        button.classList.remove('flag-active');
+                        button.classList.add('flag-inactive');
+                        button.querySelector('.flag-value').textContent = '0';
+                    }
+                }
+            }
+
+            // Calculate the combined flags register value
+            function calculateFlagsRegisterValue() {
+                let flagsValue = 0;
+                
+                // Check each flag button and set corresponding bit
+                Object.entries(flagBitMap).forEach(([flagName, bitPosition]) => {
+                    const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+
+                    if (button && button.classList.contains('flag-active')) {
+                        flagsValue |= (1 << bitPosition);
+                    }
+                });
+                
+                return flagsValue;
+            }
+
             // Handle flag toggle
             function toggleFlag(button, flagName) {
                 const isActive = button.classList.contains('flag-active');
                 const newValue = !isActive;
                 
-                // Update button appearance
-                if (newValue) {
-                    button.classList.remove('flag-inactive');
-                    button.classList.add('flag-active');
-                    button.querySelector('.flag-value').textContent = '1';
-                } else {
-                    button.classList.remove('flag-active');
-                    button.classList.add('flag-inactive');
-                    button.querySelector('.flag-value').textContent = '0';
+                // Update button appearance using reusable function
+                updateFlagButtonState(button, newValue);
+                
+                // Calculate and update the FL register value
+                const flagsRegisterValue = calculateFlagsRegisterValue();
+                const flInput = document.getElementById('fl');
+                if (flInput) {
+                    flInput.value = flagsRegisterValue.toString(16).toUpperCase().padStart(4, '0');
+                    
+                    // Also send register update message for FL
+                    vscode.postMessage({
+                        type: 'updateRegister',
+                        register: 'fl',
+                        value: flInput.value
+                    });
                 }
                 
-                console.log(`Flag ${flagName} changed to: ${newValue}`);
+                console.log(`Flag ${flagName} changed to: ${newValue}, FL register now: 0x${flagsRegisterValue.toString(16).toUpperCase()}`);
                 
                 vscode.postMessage({
                     type: 'toggleFlag',
@@ -289,17 +350,7 @@
                     Object.entries(flags).forEach(([flagName, isSet]) => {
                         const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
 
-                        if (button) {
-                            if (isSet) {
-                                button.classList.remove('flag-inactive');
-                                button.classList.add('flag-active');
-                                button.querySelector('.flag-value').textContent = '1';
-                            } else {
-                                button.classList.remove('flag-active');
-                                button.classList.add('flag-inactive');
-                                button.querySelector('.flag-value').textContent = '0';
-                            }
-                        }
+                        updateFlagButtonState(button, isSet);
                     });
                 }
             }
@@ -307,32 +358,9 @@
             // Setup event listeners after DOM is ready
             setupEventListeners();
 
-            // Signal that the webview is ready - add small delay and retry mechanism
-            console.log('Debug webview loaded, setting up ready signal');
-            
-            let readySignalSent = false;
-            let retryCount = 0;
-            const maxRetries = 5;
-            
-            function sendReadySignal() {
-                if (readySignalSent) return;
-                
-                console.log(`Sending webviewReady message (attempt ${retryCount + 1})`);
-                try {
-                    vscode.postMessage({ type: 'webviewReady' });
-                    readySignalSent = true;
-                    console.log('webviewReady message sent successfully');
-                } catch (error) {
-                    console.log('Error sending webviewReady message:', error);
-                    if (retryCount < maxRetries) {
-                        retryCount++;
-                        setTimeout(sendReadySignal, 200 * retryCount);
-                    }
-                }
-            }
-            
-            // Send initial ready signal after a small delay
-            setTimeout(sendReadySignal, 100);
+            // Signal that the webview is ready
+            console.log('Debug webview loaded, sending ready signal');
+            vscode.postMessage({ type: 'webviewReady' });
         })();
     </script>
 </body>
