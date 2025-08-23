@@ -98,8 +98,25 @@ export class DebugWebViewProvider extends BaseWebViewProvider {
                 context: 'repl'
             });
             
-            // Define flag bit positions
-            const flagBitMap = {
+            // Define complete flag bit positions for 16-bit (i8086/80286)
+            const allFlagBitMap = {
+                // i8086 flags (16-bit)
+                'CF': 0,   // Carry Flag
+                'PF': 2,   // Parity Flag  
+                'AF': 4,   // Auxiliary Flag
+                'ZF': 6,   // Zero Flag
+                'SF': 7,   // Sign Flag
+                'TF': 8,   // Trap Flag
+                'IF': 9,   // Interrupt Flag
+                'DF': 10,  // Direction Flag
+                'OF': 11,  // Overflow Flag
+                // 80286+ flags (still 16-bit)
+                'NT': 14   // Nested Task Flag
+                // Note: IOPL (bits 12-13) handled separately as it's always 3 in DOS
+            };
+            
+            // Flags we want to display in the UI
+            const displayedFlagBitMap = {
                 'CF': 0,   // Carry
                 'PF': 2,   // Parity  
                 'AF': 4,   // Auxiliary
@@ -114,17 +131,26 @@ export class DebugWebViewProvider extends BaseWebViewProvider {
             const flagsMatch = flagsResult.result.match(/\[\s*([^\]]*)\s*\]/);
             const activeFlagNames = flagsMatch ? flagsMatch[1].split(/\s+/).filter((f: string) => f.length > 0) : [];
             
-            // Create flags object and calculate flags register value
-            const flags: {[key: string]: boolean} = {};
+            // Calculate the complete flags register value from ALL active flags
             let flagsRegisterValue = 0;
             
-            for (const [flagName, bitPosition] of Object.entries(flagBitMap)) {
-                const isActive = activeFlagNames.includes(flagName);
-                flags[flagName] = isActive;
-                
-                if (isActive) {
+            // Process all possible 16-bit flags
+            for (const [flagName, bitPosition] of Object.entries(allFlagBitMap)) {
+                if (activeFlagNames.includes(flagName)) {
                     flagsRegisterValue |= (1 << bitPosition);
                 }
+            }
+            
+            // Set architectural constants for 16-bit mode
+            flagsRegisterValue |= (1 << 1);  // Bit 1 is always 1 in i8086
+            flagsRegisterValue |= (3 << 12); // IOPL = 3 (bits 12-13) - always set in DOS
+            
+            // Create flags object for display (only the ones we show in UI)
+            const flags: {[key: string]: boolean} = {};
+            
+            for (const [flagName, bitPosition] of Object.entries(displayedFlagBitMap)) {
+                const isActive = activeFlagNames.includes(flagName);
+                flags[flagName] = isActive;
             }
             
             // Add flags register value to register values
@@ -213,8 +239,8 @@ export class DebugWebViewProvider extends BaseWebViewProvider {
         }
 
         try {
-            // Use the same flag bit mapping as in refreshDebugInfo
-            const flagBitMap: { [key: string]: number } = {
+            // Use the same flag bit mapping as in extractDebugInfo (displayed flags only)
+            const displayedFlagBitMap: { [key: string]: number } = {
                 'CF': 0,   // Carry
                 'PF': 2,   // Parity  
                 'AF': 4,   // Auxiliary
@@ -225,8 +251,8 @@ export class DebugWebViewProvider extends BaseWebViewProvider {
                 'OF': 11   // Overflow
             };
 
-            if (flagBitMap[flagName] !== undefined) {
-                const bitPos = flagBitMap[flagName];
+            if (displayedFlagBitMap[flagName] !== undefined) {
+                const bitPos = displayedFlagBitMap[flagName];
                 const flagExpression = newValue 
                     ? `set $eflags |= (1 << ${bitPos})`   // Set bit
                     : `set $eflags &= ~(1 << ${bitPos})`; // Clear bit
