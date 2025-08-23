@@ -116,7 +116,7 @@ export abstract class BaseWebViewProvider implements vscode.WebviewViewProvider 
         }
 
         this._view.webview.postMessage({
-            type: 'setDebuggerState',
+            type: 'setPausedState',
             isPaused: this._isDebuggerPaused
         });
         

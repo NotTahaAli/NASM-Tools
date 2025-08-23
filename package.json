@@ -57,8 +57,8 @@
       ],
       "panel": [
         {
-          "id": "nasm-disassembly",
-          "title": "NASM Disassembly",
+          "id": "nasm-memory",
+          "title": "NASM Memory",
           "icon": "images\\icon.png"
         }
       ]
@@ -73,10 +73,10 @@
           "when": "inDebugMode"
         }
       ],
-      "nasm-disassembly": [
+      "nasm-memory": [
         {
-          "id": "nasm-tools.disassembly-view",
-          "name": "Assembly Disassembly",
+          "id": "nasm-tools.memory-view",
+          "name": "Memory Inspector",
           "type": "webview",
           "icon": "images\\icon.png",
           "when": "inDebugMode"

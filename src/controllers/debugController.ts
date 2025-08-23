@@ -1,19 +1,19 @@
 import * as vscode from 'vscode';
 import { BaseWebViewProvider } from '../views/baseWebView';
 import { DebugWebViewProvider } from '../views/debugWebView';
-import { DisassemblyWebViewProvider } from '../views/disassemblyWebView';
+import { MemoryWebViewProvider } from '../views/memoryWebView';
 
 export class DebugController {
     private debugViewProvider: DebugWebViewProvider;
-    private disassemblyViewProvider: DisassemblyWebViewProvider;
+    private memoryViewProvider: MemoryWebViewProvider;
     private viewProviders: BaseWebViewProvider[];
     private _hasShownDebugViewThisSession = false;
 
     constructor(private context: vscode.ExtensionContext, extensionUri: vscode.Uri) {
         // Create webview providers
         this.debugViewProvider = new DebugWebViewProvider(extensionUri);
-        this.disassemblyViewProvider = new DisassemblyWebViewProvider(extensionUri);
-        this.viewProviders = [this.debugViewProvider, this.disassemblyViewProvider];
+        this.memoryViewProvider = new MemoryWebViewProvider(extensionUri);
+        this.viewProviders = [this.debugViewProvider, this.memoryViewProvider];
         
         // Register webview providers
         this.registerWebViewProviders();
@@ -105,6 +105,12 @@ export class DebugController {
         for (const provider of this.viewProviders) {
             provider.setDebuggerPaused(paused);
         }
+        
+        // When paused, synchronize register values from debug view to memory view
+        if (paused) {
+            const registerValues = this.debugViewProvider.getRegisterValues();
+            this.memoryViewProvider.updateRegisterValues(registerValues);
+        }
     }
 
     // Public methods for external access
@@ -112,8 +118,8 @@ export class DebugController {
         return this.debugViewProvider;
     }
 
-    public getDisassemblyViewProvider(): DisassemblyWebViewProvider {
-        return this.disassemblyViewProvider;
+    public getMemoryViewProvider(): MemoryWebViewProvider {
+        return this.memoryViewProvider;
     }
 
     public getRegisterValues(): {[key: string]: number} {

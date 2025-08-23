@@ -1,0 +1,232 @@
+body {
+    font-family: var(--vscode-editor-font-family);
+    background-color: var(--vscode-sideBar-background);
+    color: var(--vscode-foreground);
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    line-height: 1.24;
+}
+
+.container {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(594px, 1fr));
+    gap: 10px;
+    max-height: 100vh;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.memory-section {
+    margin-bottom: 8px;
+    border: 1px solid var(--vscode-panel-border);
+    border-radius: 4px;
+    background-color: var(--vscode-editor-background);
+    overflow-x: auto;
+    width: 100%;
+}
+
+.memory-header {
+    background-color: var(--vscode-input-background);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.segment-label,
+.offset-label {
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    padding: 4px 8px;
+    background-color: var(--vscode-input-background);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 3px;
+    min-width: 40px;
+    text-align: center;
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.segment-label:focus,
+.offset-label:focus {
+    border-color: var(--vscode-focusBorder);
+    outline: none;
+}
+
+.segment-label:hover,
+.offset-label:hover {
+    border-color: var(--vscode-focusBorder);
+}
+
+.address-headers {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px;
+    gap: 2px;
+    background-color: var(--vscode-titleBar-activeBackground);
+    border-bottom: 1px solid var(--vscode-panel-border);
+    font-size: 11px;
+    color: var(--vscode-titleBar-activeForeground);
+    font-weight: bold;
+}
+
+.header-spacer {
+    padding: 0 !important;
+    font-size: 12px !important;
+    margin-right: 8px;
+    visibility: hidden;
+}
+
+.hex-headers {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+    gap: 2px;
+    width: 100%;
+}
+
+.hex-header {
+    width: 100%;
+    padding: 6px 8px;
+    text-align: center;
+    color: var(--vscode-titleBar-activeForeground);
+    font-size: 10px;
+}
+
+.hex-header:nth-child(9) {
+    margin-left: 10px;
+}
+
+.ascii-header {
+    color: var(--vscode-titleBar-activeForeground);
+    font-size: 10px;
+    min-width: 128px;
+    text-align: center;
+}
+
+.memory-content {
+    padding: 8px;
+}
+
+.memory-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 1;
+}
+
+.address {
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    min-width: fit-content;
+    margin-right: 8px;
+}
+
+.hex-inputs {
+    display: flex;
+    gap: 2px;
+    margin-right: 10px;
+}
+
+.hex-input {
+    background-color: var(--vscode-input-background);
+    color: var(--vscode-foreground);
+    border: 1px solid var(--vscode-input-border);
+    border-radius: 2px;
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0;
+    line-height: 1;
+    margin: 0;
+}
+
+.hex-input:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.hex-input:not(:disabled):hover {
+    background-color: var(--vscode-input-background);
+    border-color: var(--vscode-focusBorder);
+}
+
+.hex-input:focus {
+    border-color: var(--vscode-focusBorder);
+    outline: none;
+}
+
+.hex-input:nth-child(9) {
+    margin-left: 10px;
+}
+
+/* Memory modification feedback */
+.hex-input.pending-modification {
+    background-color: var(--vscode-inputValidation-warningBackground);
+    border-color: var(--vscode-inputValidation-warningBorder);
+    animation: pulse 1s infinite;
+}
+
+.hex-input.modification-success {
+    background-color: var(--vscode-inputValidation-infoBackground);
+    border-color: var(--vscode-inputValidation-infoBorder);
+    animation: success-flash 1s ease-out;
+}
+
+.hex-input.modification-error {
+    background-color: var(--vscode-inputValidation-errorBackground);
+    border-color: var(--vscode-inputValidation-errorBorder);
+    animation: error-shake 0.5s ease-out;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+@keyframes success-flash {
+    0% { 
+        background-color: var(--vscode-inputValidation-infoBackground);
+        transform: scale(1.05);
+    }
+    100% { 
+        background-color: var(--vscode-input-background);
+        transform: scale(1);
+    }
+}
+
+@keyframes error-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+.ascii-display {
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
+    min-width: 128px;
+    padding-left: 8px;
+    color: var(--vscode-foreground);
+    user-select: text;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        grid-template-columns: 1fr;
+    }
+    
+    .ascii-display, .ascii-header {
+        display: none;
+    }
+}
