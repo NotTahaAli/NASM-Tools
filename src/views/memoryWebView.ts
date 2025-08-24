@@ -48,13 +48,17 @@ export class MemoryWebViewProvider extends BaseWebViewProvider {
         this._registerValues = registerValues;
     }
 
+    public setDebuggerPaused(paused: boolean) {
+        // Call parent implementation
+        super.setDebuggerPaused(paused);
+    }
+
     protected updateWebviewState() {
-        // Call parent implementation first - this sends setPausedState to webview
+        // Call parent implementation - this sends setPausedState to webview
         super.updateWebviewState();
 
         // Let the webview decide what memory locations to request
         // The webview will automatically request memory when it receives setPausedState
-        console.log('Memory view: State updated, webview will handle memory requests');
     }
 
     private handleRefreshMemory() {

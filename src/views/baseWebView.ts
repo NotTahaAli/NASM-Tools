@@ -87,6 +87,12 @@ export abstract class BaseWebViewProvider implements vscode.WebviewViewProvider 
         }
     }
 
+    public resetState() {
+        console.log(`${this.constructor.name} resetState called - clearing webviewReady flag`);
+        this._webviewReady = false;
+        this._pendingState = undefined;
+    }
+
     public forceShowView() {
         console.log(`Forcing ${this.constructor.name} to show... webviewReady:`, this._webviewReady, 'view defined:', !!this._view);
         try {

@@ -60,7 +60,7 @@ export class DebugController {
                 
                 if (!session || session.type !== 'cppdbg') {
                     console.log('No active cppdbg session - setting paused to false');
-                    // this.setAllWebViewsPaused(false);
+                    this.setAllWebViewsPaused(false);
                     return;
                 }
                 
@@ -94,8 +94,9 @@ export class DebugController {
             // Reset flag when session ends
             this._hasShownDebugViewThisSession = false;
             
-            // Update both webviews directly
+            // Reset webview states and update them
             for (const provider of this.viewProviders) {
+                provider.resetState();
                 provider.setDebuggerPaused(false);
             }
         }
