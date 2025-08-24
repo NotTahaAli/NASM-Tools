@@ -10,8 +10,8 @@ body {
 
 .container {
     padding: 16px;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(594px, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     max-height: 100vh;
     overflow-y: auto;
@@ -24,7 +24,9 @@ body {
     border-radius: 4px;
     background-color: var(--vscode-editor-background);
     overflow-x: auto;
-    width: 100%;
+    flex: 0 0 auto;
+    min-width: 400px;
+    width: fit-content;
 }
 
 .memory-header {
@@ -77,10 +79,13 @@ body {
 }
 
 .header-spacer {
-    padding: 0 !important;
-    font-size: 12px !important;
+    color: var(--vscode-symbolIcon-variableForeground);
+    font-weight: bold;
+    min-width: fit-content;
     margin-right: 8px;
     visibility: hidden;
+    font-family: var(--vscode-editor-font-family);
+    font-size: 12px;
 }
 
 .hex-headers {
@@ -88,15 +93,15 @@ body {
     align-items: center;
     margin-right: 10px;
     gap: 2px;
-    width: 100%;
 }
 
 .hex-header {
-    width: 100%;
-    padding: 6px 8px;
+    width: 20px;
+    padding: 2px 0;
     text-align: center;
     color: var(--vscode-titleBar-activeForeground);
     font-size: 10px;
+    font-family: var(--vscode-editor-font-family);
 }
 
 .hex-header:nth-child(9) {
@@ -149,6 +154,7 @@ body {
     padding: 0;
     line-height: 1;
     margin: 0;
+    box-sizing: border-box;
 }
 
 .hex-input:disabled {
