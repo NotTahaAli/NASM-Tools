@@ -45,6 +45,10 @@
       {
         "command": "nasm-tools.debug",
         "title": "NASM Tools: Assemble and Debug Current File"
+      },
+      {
+        "command": "nasm-tools.setupToolchain",
+        "title": "NASM Tools: Setup i386-elf Toolchain"
       }
     ],
     "viewsContainers": {
