@@ -16,6 +16,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "nasm-tools" is now active!');
 
+	try {
+		const config = vscode.workspace.getConfiguration('debug');
+		const currentValue = config.get('allowBreakpointsEverywhere');
+		
+		if (!currentValue) {
+			await config.update('allowBreakpointsEverywhere', true, vscode.ConfigurationTarget.Global);
+			console.log('NASM Tools: Enabled "Allow Breakpoints Everywhere" for better debugging experience');
+		}
+	} catch (error) {
+		console.warn('NASM Tools: Failed to enable "Allow Breakpoints Everywhere" setting:', error);
+	}
+
 	// Initialize toolchain manager
 	const toolchainManager = new ToolchainManager(context);
 
