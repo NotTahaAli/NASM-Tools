@@ -304,11 +304,100 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 		}
 	}
 
-	// Check if GDB exists
+	// Check if GDB exists (for debugging support)
+	if (process.platform === 'linux' && !commandExists.sync('gdb')) {
+		const package_managers = ['apt', 'pacman', 'yum', 'dnf'];
+		let gdbCommand = "-1";
+		
+		for (let i = 0; i < package_managers.length; i++) {
+			const element = package_managers[i];
+			if(commandExists.sync(element)){
+				gdbCommand = element;
+				break;
+			}	
+		}
+		
+		if(gdbCommand !== '-1') {
+			vscode.window.showInformationMessage('GDB not found. Installing GDB automatically...');
+			
+			const terminal = vscode.window.createTerminal('Install GDB');
+			terminal.show();
+			
+			if (gdbCommand === 'apt') {
+				terminal.sendText('sudo apt install -y gdb && exit');
+			}
+			else if (gdbCommand === 'pacman') {
+				terminal.sendText('sudo pacman -S --noconfirm gdb && exit');
+			}
+			else if (gdbCommand === 'yum') {
+				terminal.sendText('sudo yum install -y gdb && exit');
+			}
+			else if (gdbCommand === 'dnf') {
+				terminal.sendText('sudo dnf install -y gdb && exit');
+			}
+			
+			while(terminal.exitStatus === undefined){
+				await new Promise(resolve => setTimeout(resolve, 500));
+			}
+			
+			if(commandExists.sync('gdb')){
+				vscode.window.showInformationMessage('GDB installed successfully');
+			} else {
+				vscode.window.showWarningMessage('Failed to install GDB. Switching to AFD debugger.');
+				vscode.workspace.getConfiguration('nasm-tools').update('debuggerType', 'afd', vscode.ConfigurationTarget.Global);
+			}
+		} else {
+			// No supported package manager found, fallback to AFD
+			vscode.workspace.getConfiguration('nasm-tools').update('debuggerType', 'afd', vscode.ConfigurationTarget.Global);
+			vscode.window.showWarningMessage('No supported package manager found for GDB installation. Switching to AFD debugger.');
+		}
+	}
 
-	// Check if i386-elf-ld exists
-
-	// if these don't exist then automatically change configuration of debugger to afd
+	// Check if ld exists (part of binutils package)
+	if (process.platform === 'linux' && !commandExists.sync('ld')) {
+		const package_managers = ['apt', 'pacman', 'yum', 'dnf'];
+		let binutilsCommand = "-1";
+		
+		for (let i = 0; i < package_managers.length; i++) {
+			const element = package_managers[i];
+			if(commandExists.sync(element)){
+				binutilsCommand = element;
+				break;
+			}	
+		}
+		
+		if(binutilsCommand !== '-1') {
+			vscode.window.showInformationMessage('Linker (ld) not found. Installing binutils automatically...');
+			
+			const terminal = vscode.window.createTerminal('Install Binutils');
+			terminal.show();
+			
+			if (binutilsCommand === 'apt') {
+				terminal.sendText('sudo apt install -y binutils && exit');
+			}
+			else if (binutilsCommand === 'pacman') {
+				terminal.sendText('sudo pacman -S --noconfirm binutils && exit');
+			}
+			else if (binutilsCommand === 'yum') {
+				terminal.sendText('sudo yum install -y binutils && exit');
+			}
+			else if (binutilsCommand === 'dnf') {
+				terminal.sendText('sudo dnf install -y binutils && exit');
+			}
+			
+			while(terminal.exitStatus === undefined){
+				await new Promise(resolve => setTimeout(resolve, 500));
+			}
+			
+			if(commandExists.sync('ld')){
+				vscode.window.showInformationMessage('Binutils (ld) installed successfully');
+			} else {
+				vscode.window.showWarningMessage('Failed to install binutils. Linker may not be available.');
+			}
+		} else {
+			vscode.window.showWarningMessage('No supported package manager found for binutils installation.');
+		}
+	}
 
 	// check if C/C++ extension is installed
 	const cppExtension = vscode.extensions.getExtension('ms-vscode.cpptools');
