@@ -15,12 +15,6 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
     const configs = vscode.workspace.getConfiguration('nasm-tools');
     const dosboxCommand = configs.get('dosboxCommand');
 
-    // Validate DOSBox command
-    if (!dosboxCommand) {
-        vscode.window.showErrorMessage('DOSBox command not configured. Please check extension settings.');
-        return false;
-    }
-
     const editor = vscode.window.activeTextEditor;
 
     let document = editor!.document;

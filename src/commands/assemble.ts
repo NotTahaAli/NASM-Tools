@@ -24,12 +24,6 @@ export async function assemble(outputFileBaseNameWithoutExt?: string, createELF 
     const configs = vscode.workspace.getConfiguration('nasm-tools');
     const nasmCommand = configs.get('nasmCommand');
 
-    // Validate NASM command exists
-    if (!nasmCommand) {
-        vscode.window.showErrorMessage('NASM command not configured. Please check extension settings.');
-        return false;
-    }
-
     const fileDir = path.dirname(document.fileName);
     const extension = path.extname(document.fileName);
     const fileNameWithoutExt = document.fileName.slice(0, -extension.length);

@@ -25,6 +25,13 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "nasm",
+        "aliases": ["NASM", "nasm"],
+        "extensions": [".asm"]
+      }
+    ],
     "commands": [
       {
         "command": "nasm-tools.assemble",
@@ -93,10 +100,12 @@
         "properties": {
           "nasm-tools.nasmCommand": {
             "type": "string",
+            "default": "nasm",
             "description": "Command to Run NASM (e.g. nasm if in PATH)"
           },
           "nasm-tools.dosboxCommand": {
             "type": "string",
+            "default": "dosbox-x",
             "description": "Command to Run DOSBox (e.g. dosbox or dosbox-x if in PATH)"
           }, 
           "nasm-tools.debuggerType": {
