@@ -28,21 +28,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		console.warn('NASM Tools: Failed to enable "Allow Breakpoints Everywhere" setting:', error);
 	}
 
-	// Initialize toolchain manager
-	const toolchainManager = new ToolchainManager(context);
-
-	// Auto-download toolchain if supported and not already installed
-	// Don't await this - let it run in background
-	toolchainManager.ensureToolchainAvailable().then((success) => {
-		if (success) {
-			console.log('i386-elf toolchain is ready');
-		} else {
-			console.log('i386-elf toolchain setup failed or not supported');
-		}
-	}).catch((error) => {
-		console.error('Error ensuring toolchain availability:', error);
-	});
-
 	const enableCommand = vscode.commands.registerCommand('nasm-tools.enable', async () => {
 		if (extensionActive) {
 			vscode.window.showInformationMessage('NASM Tools Extension is already activated');
@@ -104,6 +89,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const setupToolchainCommand = vscode.commands.registerCommand('nasm-tools.setupToolchain', async () => {
+		const toolchainManager = new ToolchainManager(context);
 		const success = await toolchainManager.downloadAndInstallToolchain();
 		return success;
 	});

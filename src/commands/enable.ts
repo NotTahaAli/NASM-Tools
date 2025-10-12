@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import commandExists from 'command-exists';
 import { existsSync } from 'fs';
 import { join } from 'path';
+import { ToolchainManager } from '../managers/toolchainManager';
 
 export async function enableExtension(context :vscode.ExtensionContext ,deactivate: ()=>void) {
 	// Check Current OS
@@ -415,6 +416,36 @@ export async function enableExtension(context :vscode.ExtensionContext ,deactiva
 		} else if (choice === 'Use AFD Instead') {
 			vscode.workspace.getConfiguration('nasm-tools').update('debuggerType', 'afd', vscode.ConfigurationTarget.Global);
 			vscode.window.showInformationMessage('Debugger set to AFD mode.');
+		}
+	}
+
+	// Initialize and check toolchain availability for ELF debugging
+	const toolchainManager = new ToolchainManager(context);
+	
+	// Check if toolchain is available, if not try to set it up
+	if (!toolchainManager.isToolchainInstalled()) {
+		const choice = await vscode.window.showInformationMessage(
+			'ELF debugging toolchain is not available. Would you like to set it up?',
+			'Setup Toolchain',
+			'Use AFD Only'
+		);
+		
+		if (choice === 'Setup Toolchain') {
+			vscode.window.showInformationMessage('Setting up toolchain for ELF debugging. Please wait...');
+			try {
+				const success = await toolchainManager.ensureToolchainAvailable();
+				if (success) {
+					vscode.window.showInformationMessage('Toolchain setup completed successfully');
+				} else {
+					vscode.window.showWarningMessage('Toolchain setup failed. ELF debugging will not be available.');
+				}
+			} catch (error) {
+				console.error('Toolchain setup error:', error);
+				vscode.window.showWarningMessage('Toolchain setup failed. ELF debugging will not be available.');
+			}
+		} else if (choice === 'Use AFD Only') {
+			vscode.workspace.getConfiguration('nasm-tools').update('debuggerType', 'afd', vscode.ConfigurationTarget.Global);
+			vscode.window.showInformationMessage('Debugger set to AFD mode only.');
 		}
 	}
 

@@ -13,7 +13,7 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
     }
 
     const configs = vscode.workspace.getConfiguration('nasm-tools');
-    const dosboxCommand = configs.get('dosboxCommand');
+    const dosboxCommand = configs.get('dosboxCommand') as string;
 
     const editor = vscode.window.activeTextEditor;
 
@@ -52,7 +52,7 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
                         vscode.window.showInformationMessage('Debugger type changed to AFD. Continuing with AFD debugger...');
                         
                         // Continue with AFD debugger by falling through to the else block
-                        vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+                        vscode.window.createTerminal('DOSBOX', dosboxCommand, [
                             "-c", `MOUNT C "${fileDir}"`,
                             "-c", "C:",
                             "-c", `MOUNT A "${path}"`,
@@ -65,8 +65,8 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
                 }
             }
 
-            vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
-                "-set", `serial1=nullmodem port:${debuggerPort}`,
+            vscode.window.createTerminal('DOSBOX', dosboxCommand, [
+                dosboxCommand && dosboxCommand.toLowerCase().includes('dosbox-x') ? '-set' : '-c', `serial1=nullmodem port:${debuggerPort}`,
                 "-c", `MOUNT C "${fileDir}"`,
                 "-c", "C:",
                 "-c", `MOUNT A "${path}"`,
@@ -108,7 +108,7 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
             });
 
         } else {
-            vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+            vscode.window.createTerminal('DOSBOX', dosboxCommand, [
                 "-c", `MOUNT C "${fileDir}"`,
                 "-c", "C:",
                 "-c", `MOUNT A "${path}"`,
@@ -116,7 +116,7 @@ export async function run(debugMode = false, debugViewProvider?: DebugWebViewPro
             ]);
         }
     } else {
-        vscode.window.createTerminal('DOSBOX', dosboxCommand as string, [
+        vscode.window.createTerminal('DOSBOX', dosboxCommand, [
             "-c", `MOUNT C "${fileDir}"`,
             "-c", "C:",
             "-c", `${fileBaseNameWithoutExt}.com`

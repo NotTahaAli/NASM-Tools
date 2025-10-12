@@ -113,7 +113,7 @@ export async function assemble(outputFileBaseNameWithoutExt?: string, createELF 
 
             // Check if ELF assembly succeeded
             if (term.exitStatus && term.exitStatus.code !== 0) {
-                vscode.window.showErrorMessage('ELF assembly failed. Check terminal output for details.');
+                vscode.window.showErrorMessage('ELF assembly failed. Your assembly code may have syntax errors or unsupported directives for ELF format.');
                 throw new Error('ELF assembly failed');
             }
 
@@ -132,7 +132,7 @@ export async function assemble(outputFileBaseNameWithoutExt?: string, createELF 
 
             // Check if linking succeeded
             if (term.exitStatus && term.exitStatus.code !== 0) {
-                vscode.window.showErrorMessage('ELF linking failed. Check terminal output for details.');
+                vscode.window.showErrorMessage('ELF linking failed. The linker could not create the executable from your object file.');
                 throw new Error('ELF linking failed');
             }
 
