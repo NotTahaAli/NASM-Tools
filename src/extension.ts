@@ -1,9 +1,9 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { enableExtension } from './commands/enable';
 import { assemble } from './commands/assemble';
 import { run } from './commands/run';
+import { DebugController } from './managers/debugController';
+import { ToolchainManager } from './managers/toolchainManager';
 
 let extensionActive = false;
 
@@ -15,6 +15,18 @@ export async function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "nasm-tools" is now active!');
+
+	try {
+		const config = vscode.workspace.getConfiguration('debug');
+		const currentValue = config.get('allowBreakpointsEverywhere');
+		
+		if (!currentValue) {
+			await config.update('allowBreakpointsEverywhere', true, vscode.ConfigurationTarget.Global);
+			console.log('NASM Tools: Enabled "Allow Breakpoints Everywhere" for better debugging experience');
+		}
+	} catch (error) {
+		console.warn('NASM Tools: Failed to enable "Allow Breakpoints Everywhere" setting:', error);
+	}
 
 	const enableCommand = vscode.commands.registerCommand('nasm-tools.enable', async () => {
 		if (extensionActive) {
@@ -33,6 +45,9 @@ export async function activate(context: vscode.ExtensionContext) {
 		return false;
 	}
 	extensionActive = true;
+	
+	// Create debug controller to manage all webviews
+	const debugController = new DebugController(context, context.extensionUri);
 
 	const assembleCommand = vscode.commands.registerCommand('nasm-tools.assemble', async () => {
 		if (!extensionActive) {
@@ -40,7 +55,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			return false;
 		}
 
-		return await assemble();
+		return await assemble(undefined, false, context);
 	});
 
 	const openDosBoxCommand = vscode.commands.registerCommand('nasm-tools.openDosBox', async () => {
@@ -61,10 +76,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			return false;
 		}
 
-		return await run();
+		return await run(false, undefined, context);
 	});
-
-
 
 	const debugCommand = vscode.commands.registerCommand('nasm-tools.debug', async () => {
 		if (!extensionActive) {
@@ -72,13 +85,20 @@ export async function activate(context: vscode.ExtensionContext) {
 			return false;
 		}
 
-		return await run(true);
+		return await run(true, debugController.getDebugViewProvider(), context);
+	});
+
+	const setupToolchainCommand = vscode.commands.registerCommand('nasm-tools.setupToolchain', async () => {
+		const toolchainManager = new ToolchainManager(context);
+		const success = await toolchainManager.downloadAndInstallToolchain();
+		return success;
 	});
 
 	context.subscriptions.push(assembleCommand);
 	context.subscriptions.push(openDosBoxCommand);
 	context.subscriptions.push(runCommand);
 	context.subscriptions.push(debugCommand);
+	context.subscriptions.push(setupToolchainCommand);
 }
 
 // This method is called when your extension is deactivated

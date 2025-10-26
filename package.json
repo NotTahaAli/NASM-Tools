@@ -10,7 +10,7 @@
     "url": "https://github.com/NotTahaAli"
   },
   "engines": {
-    "vscode": "^1.46.0"
+    "vscode": "^1.49.0"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,13 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "nasm",
+        "aliases": ["NASM", "nasm"],
+        "extensions": [".asm"]
+      }
+    ],
     "commands": [
       {
         "command": "nasm-tools.assemble",
@@ -45,8 +52,48 @@
       {
         "command": "nasm-tools.debug",
         "title": "NASM Tools: Assemble and Debug Current File"
+      },
+      {
+        "command": "nasm-tools.setupToolchain",
+        "title": "NASM Tools: Setup i386-elf Toolchain"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "nasm-tools",
+          "title": "NASM Tools",
+          "icon": "images\\icon.png"
+        }
+      ],
+      "panel": [
+        {
+          "id": "nasm-memory",
+          "title": "NASM Memory",
+          "icon": "images\\icon.png"
+        }
+      ]
+    },
+    "views": {
+      "nasm-tools": [
+        {
+          "id": "nasm-tools.debug-view",
+          "name": "NASM Debug Info",
+          "type": "webview", 
+          "icon": "images\\icon.png", 
+          "when": "inDebugMode"
+        }
+      ],
+      "nasm-memory": [
+        {
+          "id": "nasm-tools.memory-view",
+          "name": "Memory Inspector",
+          "type": "webview",
+          "icon": "images\\icon.png",
+          "when": "inDebugMode"
+        }
+      ]
+    },
     "configuration": [
       {
         "title": "NASM Tools",
@@ -58,6 +105,19 @@
           "nasm-tools.dosboxCommand": {
             "type": "string",
             "description": "Command to Run DOSBox (e.g. dosbox or dosbox-x if in PATH)"
+          }, 
+          "nasm-tools.debuggerType": {
+            "type": "string",
+            "enum": ["afd", "gdb"],
+            "default": "gdb",
+            "description": "Choose Debugger: AFD (legacy) or GDB (advanced)"
+          }, 
+          "nasm-tools.debuggerPort": {
+            "type": "number",
+            "default": 1111,
+            "minimum": 1024,
+            "maximum": 65535,
+            "description": "Port for Debugger Communication (default: 1111)"
           }
         }
       }
@@ -100,7 +160,7 @@
     "@types/command-exists": "^1.2.3",
     "@types/mocha": "^10.0.7",
     "@types/node": "20.x",
-    "@types/vscode": "^1.46.0",
+    "@types/vscode": "^1.49.0",
     "@typescript-eslint/eslint-plugin": "^7.14.1",
     "@typescript-eslint/parser": "^7.11.0",
     "@vscode/test-cli": "^0.0.9",

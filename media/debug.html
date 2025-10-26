@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource}; script-src 'nonce-${nonce}';">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="${styleDebugUri}" rel="stylesheet">
+    <title>NASM Debug Info</title>
+</head>
+<body>
+    <div class="debug-container">
+        <div class="registers-section">
+            <h3>CPU Registers</h3>
+            <div class="register-grid">
+                <div class="register-item">
+                    <label>AX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ax" value="1234" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>BX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="bx" value="5763" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>CX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="cx" value="ABCD" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DX:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="dx" value="1122" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SI:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="si" value="0000" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DI:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="di" value="FFFF" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>BP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="bp" value="7FFF" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="sp" value="7FFF" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>IP:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ip" value="0100" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>FL:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="fl" value="0246" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>CS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="cs" value="1000" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>DS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ds" value="1000" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>SS:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="ss" value="1000" maxlength="4">
+                    </div>
+                </div>
+                <div class="register-item">
+                    <label>ES:</label>
+                    <div class="hex-group">
+                        <span class="hex-prefix">0x</span>
+                        <input type="text" id="es" value="1000" maxlength="4">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flags-section">
+            <h3>CPU Flags</h3>
+            <div class="flags-grid">
+                <button class="flag-button flag-inactive" id="flag-cf">
+                    <span class="flag-name">CF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-zf">
+                    <span class="flag-name">ZF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-sf">
+                    <span class="flag-name">SF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-of">
+                    <span class="flag-name">OF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-pf">
+                    <span class="flag-name">PF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-af">
+                    <span class="flag-name">AF</span>
+                    <span class="flag-value">0</span>
+                </button>
+                <button class="flag-button flag-active" id="flag-if">
+                    <span class="flag-name">IF</span>
+                    <span class="flag-value">1</span>
+                </button>
+                <button class="flag-button flag-inactive" id="flag-df">
+                    <span class="flag-name">DF</span>
+                    <span class="flag-value">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script nonce="${nonce}">
+        // This script will be run within the webview itself
+        // It cannot access the main VS Code APIs directly.
+        (function () {
+            const vscode = acquireVsCodeApi();
+
+            // Function to validate hex input and auto-capitalize
+            function validateHexInput(input) {
+                // Remove any non-hex characters and convert to uppercase
+                let value = input.value.replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+                
+                // Ensure it doesn't exceed maxlength
+                if (input.maxLength && value.length > input.maxLength) {
+                    value = value.substring(0, input.maxLength);
+                }
+                
+                // Update the input value
+                input.value = value;
+            }
+
+            // Handle register value changes
+            function handleRegisterChange(input) {
+                const registerName = input.id;
+                const value = input.value;
+                
+                console.log(`Register ${registerName} changed to: ${value}`);
+                
+                // If FL register changed, update flag buttons
+                if (registerName === 'fl') {
+                    const flagsValue = parseInt(value, 16) || 0;
+                    
+                    Object.entries(flagBitMap).forEach(([flagName, bitPosition]) => {
+                        const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+                        const isSet = (flagsValue & (1 << bitPosition)) !== 0;
+
+                        updateFlagButtonState(button, isSet);
+                    });
+                }
+                
+                vscode.postMessage({
+                    type: 'updateRegister',
+                    register: registerName,
+                    value: value
+                });
+            }
+
+            // Flag bit positions (must match the mapping in debugWebView.ts)
+            const flagBitMap = {
+                'CF': 0,   // Carry
+                'PF': 2,   // Parity  
+                'AF': 4,   // Auxiliary
+                'ZF': 6,   // Zero
+                'SF': 7,   // Sign
+                'IF': 9,   // Interrupt
+                'DF': 10,  // Direction
+                'OF': 11   // Overflow
+            };
+
+            // Reusable function to update a single flag button's state
+            function updateFlagButtonState(button, isSet) {
+                if (button) {
+                    if (isSet) {
+                        button.classList.remove('flag-inactive');
+                        button.classList.add('flag-active');
+                        button.querySelector('.flag-value').textContent = '1';
+                    } else {
+                        button.classList.remove('flag-active');
+                        button.classList.add('flag-inactive');
+                        button.querySelector('.flag-value').textContent = '0';
+                    }
+                }
+            }
+
+            // Calculate the combined flags register value
+            function calculateFlagsRegisterValue() {
+                let flagsValue = 0;
+                
+                // Check each flag button and set corresponding bit
+                Object.entries(flagBitMap).forEach(([flagName, bitPosition]) => {
+                    const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+
+                    if (button && button.classList.contains('flag-active')) {
+                        flagsValue |= (1 << bitPosition);
+                    }
+                });
+                
+                return flagsValue;
+            }
+
+            // Handle flag toggle
+            function toggleFlag(button, flagName) {
+                const isActive = button.classList.contains('flag-active');
+                const newValue = !isActive;
+                
+                // Update button appearance using reusable function
+                updateFlagButtonState(button, newValue);
+                
+                // Calculate and update the FL register value
+                const flagsRegisterValue = calculateFlagsRegisterValue();
+                const flInput = document.getElementById('fl');
+                if (flInput) {
+                    flInput.value = flagsRegisterValue.toString(16).toUpperCase().padStart(4, '0');
+                    
+                    // Also send register update message for FL
+                    vscode.postMessage({
+                        type: 'updateRegister',
+                        register: 'fl',
+                        value: flInput.value
+                    });
+                }
+                
+                console.log(`Flag ${flagName} changed to: ${newValue}, FL register now: 0x${flagsRegisterValue.toString(16).toUpperCase()}`);
+                
+                vscode.postMessage({
+                    type: 'toggleFlag',
+                    flag: flagName,
+                    value: newValue
+                });
+            }
+
+            // Setup event listeners for CSP compliance
+            function setupEventListeners() {
+                // Register input event listeners
+                document.querySelectorAll('input[type="text"]').forEach(input => {
+                    input.addEventListener('input', function() {
+                        validateHexInput(this);
+                    });
+                    
+                    input.addEventListener('change', function() {
+                        handleRegisterChange(this);
+                    });
+                    
+                    input.addEventListener('keypress', function(event) {
+                        if (event.key === 'Enter') {
+                            handleRegisterChange(this);
+                        }
+                    });
+                });
+                
+                // Flag button event listeners
+                document.querySelectorAll('.flag-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const flagName = this.querySelector('.flag-name').textContent;
+                        toggleFlag(this, flagName);
+                    });
+                });
+            }
+
+            // Handle messages from the extension
+            window.addEventListener('message', event => {
+                const message = event.data;
+                
+                switch (message.type) {
+                    case 'setPausedState':
+                        setPausedState(message.isPaused);
+                        break;
+                    case 'updateRegisterInfo':
+                        setPausedState(message.isPaused);
+                        updateRegisterData(message.registers, message.flags);
+                        break;
+                }
+            });
+
+            function setPausedState(isPaused) {
+                console.log('Setting paused state:', isPaused);
+                
+                // Enable/disable all register inputs
+                document.querySelectorAll('input[type="text"]').forEach(input => {
+                    input.disabled = !isPaused;
+                });
+                
+                // Enable/disable all flag buttons
+                document.querySelectorAll('.flag-button').forEach(button => {
+                    button.disabled = !isPaused;
+                });
+            }
+
+            function updateRegisterData(registers, flags) {
+                console.log('Updating debug info with registers:', registers, 'flags:', flags);
+                
+                // Update register values
+                if (registers) {
+                    Object.entries(registers).forEach(([regName, value]) => {
+                        const input = document.getElementById(regName.toLowerCase());
+
+                        if (input) {
+                            input.value = typeof value === 'number' ? 
+                                value.toString(16).toUpperCase().padStart(4, '0') : 
+                                value.toString().toUpperCase();
+                        }
+                    });
+                }
+                
+                // Update flag states
+                if (flags) {
+                    Object.entries(flags).forEach(([flagName, isSet]) => {
+                        const button = document.getElementById(`flag-${flagName.toLowerCase()}`);
+
+                        updateFlagButtonState(button, isSet);
+                    });
+                }
+            }
+            
+            // Setup event listeners after DOM is ready
+            setupEventListeners();
+
+            // Signal that the webview is ready
+            console.log('Debug webview loaded, sending ready signal');
+            vscode.postMessage({ type: 'webviewReady' });
+        })();
+    </script>
+</body>
+</html>
