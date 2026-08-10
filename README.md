@@ -16,11 +16,12 @@
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+- [NASM](https://www.nasm.us/) — must be on your PATH.
+- [DOSBox](https://www.dosbox.com/) or [DOSBox-X](https://dosbox-x.com/) — must be on your PATH.
 
-- NASM Required
-- DOSBOX or DOSBOX-X Required
-  The Above Dependencies need to be added to Path. If you do not have these installed, you will get a popup with the opiton to download from winget.
+If either is missing, the extension offers to install them for you (winget on Windows; pacman, apt, yum, dnf, or brew on Linux/macOS, whichever is detected). Otherwise, install and add them to your PATH manually.
+
+Also required: the [NASM Language Support](https://marketplace.visualstudio.com/items?itemName=doinkythederp.nasm-language-support) extension (installed automatically as a dependency) for assembly error validation.
 
 ## Extension Settings
 
